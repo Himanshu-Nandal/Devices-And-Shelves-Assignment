@@ -1,7 +1,7 @@
 package com.assignment1.DevicesAndShelves.Models;
 
 import lombok.*;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -17,10 +17,10 @@ public class Device {
     private Integer totalShelfPositions;
     private String imageUrl;
     private Boolean isDeleted;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private ZonedDateTime createdAt;   // Audit timestamp - when device was created
+    private ZonedDateTime updatedAt;   // Audit timestamp - when device was last modified
 
-    // helper to map from Neo4j Node (if you want)
+    // helper to map from Neo4j Node
     public static Device from(org.neo4j.driver.types.Node n) {
         Device d = new Device();
         d.setDeviceId(n.get("deviceId").asString());
@@ -31,20 +31,14 @@ public class Device {
         d.setTotalShelfPositions(n.get("totalShelfPositions").asInt(0));
         d.setImageUrl(n.get("imageUrl").asString(null));
         d.setIsDeleted(n.get("isDeleted").asBoolean(false));
-        // createdAt/updatedAt can be read as LocalDateTime if you store as datetime()
+
+        // Map datetime fields from Neo4j
+        if (!n.get("createdAt").isNull()) {
+            d.setCreatedAt(n.get("createdAt").asZonedDateTime());
+        }
+        if (!n.get("updatedAt").isNull()) {
+            d.setUpdatedAt(n.get("updatedAt").asZonedDateTime());
+        }
         return d;
     }
 }
-
-/*
-* deviceId: string (UUID) unique
-deviceName: string
-partNumber: string
-buildingName: string
-deviceType: string
-totalShelfPositions: int
-imageUrl?: string
-isDeleted: boolean (default false)  ← soft delete
-createdAt: datetime
-updatedAt: datetime
-* */
