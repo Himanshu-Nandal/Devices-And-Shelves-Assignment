@@ -10,35 +10,31 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class Device {
     private String deviceId;           // UUID string we create in service layer
+
     private String deviceName;
     private String partNumber;
     private String buildingName;
     private String deviceType;
     private Integer totalShelfPositions;
+
     private String imageUrl;
     private Boolean isDeleted;
     private ZonedDateTime createdAt;   // Audit timestamp - when device was created
     private ZonedDateTime updatedAt;   // Audit timestamp - when device was last modified
 
-    // helper to map from Neo4j Node
+    // Helper to map from Neo4j Node using builder pattern
     public static Device from(org.neo4j.driver.types.Node n) {
-        Device d = new Device();
-        d.setDeviceId(n.get("deviceId").asString());
-        d.setDeviceName(n.get("deviceName").asString(null));
-        d.setPartNumber(n.get("partNumber").asString(null));
-        d.setBuildingName(n.get("buildingName").asString(null));
-        d.setDeviceType(n.get("deviceType").asString(null));
-        d.setTotalShelfPositions(n.get("totalShelfPositions").asInt(0));
-        d.setImageUrl(n.get("imageUrl").asString(null));
-        d.setIsDeleted(n.get("isDeleted").asBoolean(false));
-
-        // Map datetime fields from Neo4j
-        if (!n.get("createdAt").isNull()) {
-            d.setCreatedAt(n.get("createdAt").asZonedDateTime());
-        }
-        if (!n.get("updatedAt").isNull()) {
-            d.setUpdatedAt(n.get("updatedAt").asZonedDateTime());
-        }
-        return d;
+        return Device.builder()
+                .deviceId(n.get("deviceId").asString())
+                .deviceName(n.get("deviceName").asString(null))
+                .partNumber(n.get("partNumber").asString(null))
+                .buildingName(n.get("buildingName").asString(null))
+                .deviceType(n.get("deviceType").asString(null))
+                .totalShelfPositions(n.get("totalShelfPositions").asInt(0))
+                .imageUrl(n.get("imageUrl").asString(null))
+                .isDeleted(n.get("isDeleted").asBoolean(false))
+                .createdAt(n.get("createdAt").isNull() ? null : n.get("createdAt").asZonedDateTime())
+                .updatedAt(n.get("updatedAt").isNull() ? null : n.get("updatedAt").asZonedDateTime())
+                .build();
     }
 }

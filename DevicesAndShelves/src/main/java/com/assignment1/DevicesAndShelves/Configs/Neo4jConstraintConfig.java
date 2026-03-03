@@ -19,22 +19,33 @@ public class Neo4jConstraintConfig {
         try (Session session = driver.session()) {
 
             session.executeWrite(tx -> {
+                // using IF NOT EXISTS makes it not fail when constraints already exist.
                 tx.run("""
                         CREATE CONSTRAINT device_id IF NOT EXISTS
                         FOR (d:Device)
-                        REQUIRE d.id IS UNIQUE
+                        REQUIRE d.deviceId IS UNIQUE AND d.totalShelfPositions > 0
                         """);
-                // using IF NOT EXISTS makes it not fail when constraints already exist.
+                tx.run("""
+                        CREATE CONSTRAINT device_name IF NOT EXISTS
+                        FOR (d:Device)
+                        REQUIRE d.deviceName IS UNIQUE
+                        """);
+
                 tx.run("""
                         CREATE CONSTRAINT shelf_id IF NOT EXISTS
                         FOR (s:Shelf)
-                        REQUIRE s.id IS UNIQUE
+                        REQUIRE s.shelfId IS UNIQUE
+                        """);
+                tx.run("""
+                        CREATE CONSTRAINT shelf_name IF NOT EXISTS
+                        FOR (s:Shelf)
+                        REQUIRE s.ShelfName IS UNIQUE
                         """);
 
                 tx.run("""
                         CREATE CONSTRAINT shelf_position_id IF NOT EXISTS
                         FOR (sp:ShelfPosition)
-                        REQUIRE sp.id IS UNIQUE
+                        REQUIRE sp.shelfPositionId IS UNIQUE
                         """);
 
                 return null;

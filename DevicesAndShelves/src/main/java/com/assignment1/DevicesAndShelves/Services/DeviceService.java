@@ -23,7 +23,7 @@ public class DeviceService {
 
 
     public Map<String, Object> createDevice(Device device) {
-        logger.info("Creating device: {}", device.getDeviceName());
+        logger.info("Service: Creating device with Name: {}", device.getDeviceName());
 
         // Validate input
         validateDevice(device);
@@ -33,11 +33,6 @@ public class DeviceService {
         catch (Exception e){
             logger.error("Error generating UUID for device: {}", e.getMessage());
             throw new RuntimeException("Error generating UUID for device", e);
-        }
-        try{device.setIsDeleted(false); }
-        catch (Exception e){
-            logger.error("Error setting isDeleted flag for device: {}", e.getMessage());
-            throw new RuntimeException("Error setting isDeleted flag for device", e);
         }
 
         // Create device in repository
@@ -72,5 +67,97 @@ public class DeviceService {
             throw new BadRequestException("Number of shelf positions must be greater than 0");
         }
 
+    }
+
+    public Map<String, Object> getDeviceById(String deviceId) {
+        logger.info("Service: Fetching device with ID: {}", deviceId);
+
+        // Validate input
+        if (deviceId == null || deviceId.isEmpty()) {
+            throw new BadRequestException("Device ID is required");
+        }
+
+        // Fetch device details from repository
+        Device device = deviceRepository.getDeviceById(deviceId);
+        if (device == null || device.getIsDeleted()) {
+            throw new NotFoundException("Device not found with ID: " + deviceId);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Device found successfully");
+        response.put("data", device);
+        return response;
+    }
+
+    public Map<String, Object> updateDevice(String deviceId, Device device) {
+        logger.info("Service: Updating device with ID: {}", deviceId);
+
+        // Validate input
+        Device existingDevice = deviceRepository.getDeviceById(deviceId);
+        if (deviceId.isEmpty() || device.getDeviceName() == null || device.getDeviceName().isEmpty()) {
+            throw new BadRequestException("Device ID is required");
+        }
+// Not needed as update method is only called on a device when we have the device already opened in the UI, i,e.,
+// it already exists. If it doesn't exist, the client should not be able to call the update API in the first place. So this check is redundant.
+//        else if (existingDevice == null || existingDevice.getIsDeleted()) {
+//            throw new NotFoundException("Device not found with ID: " + deviceId);
+//        }
+        else if (device.getTotalShelfPositions() != null && device.getTotalShelfPositions() <= 0) {
+            throw new BadRequestException("Total shelf positions must be greater than 0");
+        }
+
+        // Update device details in repository
+        Device updatedDevice = deviceRepository.updateDevice(deviceId, device);
+        if (updatedDevice == null) {
+            throw new NotFoundException("Device not found with ID: " + deviceId);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Device updated successfully");
+        response.put("data", updatedDevice);
+        return response;
+    }
+
+    public Map<String, Object> deleteDevice(String deviceId) {
+        logger.info("Service: Soft deleting device with ID: {}", deviceId);
+
+        // Validate input
+        if (deviceId == null || deviceId.isEmpty()) {
+            throw new BadRequestException("Device ID is required");
+        }
+
+        // Soft delete device in repository
+        boolean deleted = deviceRepository.softDeleteDevice(deviceId);
+        if (!deleted) {
+            throw new NotFoundException("Device not found with ID: " + deviceId);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Device deleted successfully");
+        return response;
+    }
+
+    public Map<String, Object> getDeviceByName(String deviceName) {
+        logger.info("Service: Fetching device with Name: {}", deviceName);
+
+        // Validate input
+        if (deviceName == null || deviceName.isEmpty()) {
+            throw new BadRequestException("Device name is required");
+        }
+
+        // Fetch device details from repository
+        Device device = deviceRepository.getDeviceByName(deviceName);
+        if (device == null || device.getIsDeleted()) {
+            throw new NotFoundException("Device not found with name: " + deviceName);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Device found successfully");
+        response.put("data", device);
+        return response;
     }
 }

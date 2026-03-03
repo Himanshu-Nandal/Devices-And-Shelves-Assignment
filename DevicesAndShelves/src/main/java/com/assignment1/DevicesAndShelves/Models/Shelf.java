@@ -1,7 +1,7 @@
 package com.assignment1.DevicesAndShelves.Models;
 
 import lombok.*;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -14,8 +14,21 @@ public class Shelf {
     private String partNumber;
     private String imageUrl;
     private Boolean isDeleted;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
+
+    // Helper to map from Neo4j Node using builder pattern
+    public static Shelf from(org.neo4j.driver.types.Node n) {
+        return Shelf.builder()
+                .shelfId(n.get("shelfId").asString())
+                .shelfName(n.get("shelfName").asString(null))
+                .partNumber(n.get("partNumber").asString(null))
+                .imageUrl(n.get("imageUrl").asString(null))
+                .isDeleted(n.get("isDeleted").asBoolean(false))
+                .createdAt(n.get("createdAt").isNull() ? null : n.get("createdAt").asZonedDateTime())
+                .updatedAt(n.get("updatedAt").isNull() ? null : n.get("updatedAt").asZonedDateTime())
+                .build();
+    }
 }
 /*
 * shelfId: string (UUID) unique

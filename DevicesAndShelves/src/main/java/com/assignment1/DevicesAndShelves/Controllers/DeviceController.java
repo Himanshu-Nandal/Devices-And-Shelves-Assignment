@@ -28,13 +28,14 @@ public class DeviceController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-//    // Get the device details by clicking on the device on the client, which will show the details of the device and the shelf positions in that device
-//    @GetMapping("/{deviceId}")
-//    public ResponseEntity<Map<String, Object>> getDeviceById(@PathVariable String deviceId) {
-//        logger.info("Fetching device with ID: {}", deviceId);
-//        Map<String, Object> response = deviceService.getDeviceById(deviceId);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    // Get the device details by clicking on the device on the client, which will show the details of the device and the shelf positions in that device
+    @GetMapping("/{deviceId}")
+    public ResponseEntity<Map<String, Object>> getDeviceById(@PathVariable String deviceId) {
+        logger.info("Fetching device with ID: {}", deviceId);
+        Map<String, Object> response = deviceService.getDeviceById(deviceId);
+        return new ResponseEntity<>(response, HttpStatus.FOUND);
+    }
+
 //
 //    // for pagination of devices on landing page of the client
 //    @GetMapping
@@ -51,21 +52,29 @@ public class DeviceController {
 //        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
 //
-//    // To update a device's details (except deviceId)
-//    @PutMapping("/{deviceId}")
-//    public ResponseEntity<Map<String, Object>> updateDevice(@PathVariable String deviceId, @RequestBody Device device) {
-//        logger.info("Updating device with ID: {}", deviceId);
-//        Map<String, Object> response = deviceService.updateDevice(deviceId, device);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-//
-//    // Soft delete a device by setting isDeleted to true
-//    @DeleteMapping("/{deviceId}")
-//    public ResponseEntity<Map<String, Object>> deleteDevice(@PathVariable String deviceId) {
-//        logger.info("Soft deleting device with ID: {}", deviceId);
-//        Map<String, Object> response = deviceService.deleteDevice(deviceId);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
+    // To update a device's details (except deviceId)
+    @PutMapping("/{deviceId}")
+    public ResponseEntity<Map<String, Object>> updateDevice(@PathVariable String deviceId, @RequestBody Device device) {
+        logger.info("Updating device with ID: {}", deviceId);
+        Map<String, Object> response = deviceService.updateDevice(deviceId, device);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Soft delete a device by setting isDeleted to true
+    @DeleteMapping("/{deviceId}")
+    public ResponseEntity<Map<String, Object>> deleteDevice(@PathVariable String deviceId) {
+        logger.info("Soft deleting device with ID: {}", deviceId);
+        Map<String, Object> response = deviceService.deleteDevice(deviceId);
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+    }
+
+    // Get the device details by searching deviceName on search bar, which will show the details of the device and the shelf positions in that device
+    @GetMapping("/search/{deviceName}")
+    public ResponseEntity<Map<String, Object>> getDeviceByName(@PathVariable String deviceName) {
+        logger.info("Fetching device with Name: {}", deviceName);
+        Map<String, Object> response = deviceService.getDeviceByName(deviceName);
+        return new ResponseEntity<>(response, HttpStatus.FOUND);
+    }
 //
 //    // Get the device from searching deviceId on search bar
 //    @GetMapping("/search/{deviceId}")
