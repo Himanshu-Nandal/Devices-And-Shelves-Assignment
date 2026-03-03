@@ -23,24 +23,26 @@ public class Neo4jConstraintConfig {
                 tx.run("""
                         CREATE CONSTRAINT device_id IF NOT EXISTS
                         FOR (d:Device)
-                        REQUIRE d.deviceId IS UNIQUE AND d.totalShelfPositions > 0
+                        REQUIRE d.deviceId IS UNIQUE
                         """);
-                tx.run("""
-                        CREATE CONSTRAINT device_name IF NOT EXISTS
-                        FOR (d:Device)
-                        REQUIRE d.deviceName IS UNIQUE
-                        """);
+
+//                tx.run("""
+//                        CREATE CONSTRAINT device_name IF NOT EXISTS
+//                        FOR (d:Device)
+//                        REQUIRE d.deviceName IS UNIQUE
+//                        """);
 
                 tx.run("""
                         CREATE CONSTRAINT shelf_id IF NOT EXISTS
                         FOR (s:Shelf)
                         REQUIRE s.shelfId IS UNIQUE
                         """);
-                tx.run("""
-                        CREATE CONSTRAINT shelf_name IF NOT EXISTS
-                        FOR (s:Shelf)
-                        REQUIRE s.ShelfName IS UNIQUE
-                        """);
+
+//                tx.run("""
+//                        CREATE CONSTRAINT shelf_name IF NOT EXISTS
+//                        FOR (s:Shelf)
+//                        REQUIRE s.shelfName IS UNIQUE
+//                        """);
 
                 tx.run("""
                         CREATE CONSTRAINT shelf_position_id IF NOT EXISTS

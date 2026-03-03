@@ -15,10 +15,12 @@ import java.util.*;
 public class DeviceService {
     private static final Logger logger = LoggerFactory.getLogger(DeviceService.class);
     private final DeviceRepository deviceRepository;
+    private final ShelfPositionService shelfPositionService;
 
     @Autowired
-    public DeviceService(DeviceRepository deviceRepository) {
+    public DeviceService(DeviceRepository deviceRepository, ShelfPositionService shelfPositionService) {
         this.deviceRepository = deviceRepository;
+        this.shelfPositionService = shelfPositionService;
     }
 
 
@@ -27,6 +29,9 @@ public class DeviceService {
 
         // Validate input
         validateDevice(device);
+        if (deviceRepository.getDeviceByName(device.getDeviceName()) != null) {
+            throw new BadRequestException("Device with the same name already exists");
+        }
 
         // Generate UUID for device
         try{device.setDeviceId(UUID.randomUUID().toString()); }
@@ -94,24 +99,47 @@ public class DeviceService {
         logger.info("Service: Updating device with ID: {}", deviceId);
 
         // Validate input
-        Device existingDevice = deviceRepository.getDeviceById(deviceId);
-        if (deviceId.isEmpty() || device.getDeviceName() == null || device.getDeviceName().isEmpty()) {
+        if (deviceId == null || deviceId.isEmpty()) {
             throw new BadRequestException("Device ID is required");
         }
-// Not needed as update method is only called on a device when we have the device already opened in the UI, i,e.,
-// it already exists. If it doesn't exist, the client should not be able to call the update API in the first place. So this check is redundant.
-//        else if (existingDevice == null || existingDevice.getIsDeleted()) {
-//            throw new NotFoundException("Device not found with ID: " + deviceId);
-//        }
-        else if (device.getTotalShelfPositions() != null && device.getTotalShelfPositions() <= 0) {
-            throw new BadRequestException("Total shelf positions must be greater than 0");
+
+        // Fetch existing device first
+        Device existingDevice = deviceRepository.getDeviceById(deviceId);
+        if (existingDevice == null || existingDevice.getIsDeleted()) {
+            throw new NotFoundException("Device not found with ID: " + deviceId);
+        }
+
+        // Merge updates with existing data (only update non-null fields)
+        if (device.getDeviceName() != null && !device.getDeviceName().isEmpty()) {
+            existingDevice.setDeviceName(device.getDeviceName());
+        }
+        if (device.getPartNumber() != null && !device.getPartNumber().isEmpty()) {
+            existingDevice.setPartNumber(device.getPartNumber());
+        }
+        if (device.getBuildingName() != null && !device.getBuildingName().isEmpty()) {
+            existingDevice.setBuildingName(device.getBuildingName());
+        }
+        if (device.getDeviceType() != null && !device.getDeviceType().isEmpty()) {
+            existingDevice.setDeviceType(device.getDeviceType());
+        }
+        if (device.getTotalShelfPositions() != null) {
+            if (device.getTotalShelfPositions() <= 0) {
+                throw new BadRequestException("Total shelf positions must be greater than 0");
+            }
+            int changesInShelfPositions = device.getTotalShelfPositions() - existingDevice.getTotalShelfPositions();
+            if (changesInShelfPositions > 0) {
+                shelfPositionService.createShelfPositions(deviceId, changesInShelfPositions, existingDevice.getTotalShelfPositions());
+            } else if (changesInShelfPositions < 0) {
+                shelfPositionService.deleteShelfPositions(deviceId, -changesInShelfPositions, existingDevice.getTotalShelfPositions());
+            }
+            existingDevice.setTotalShelfPositions(device.getTotalShelfPositions());
+        }
+        if (device.getImageUrl() != null) {
+            existingDevice.setImageUrl(device.getImageUrl());
         }
 
         // Update device details in repository
-        Device updatedDevice = deviceRepository.updateDevice(deviceId, device);
-        if (updatedDevice == null) {
-            throw new NotFoundException("Device not found with ID: " + deviceId);
-        }
+        Device updatedDevice = deviceRepository.updateDevice(deviceId, existingDevice);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
@@ -119,6 +147,35 @@ public class DeviceService {
         response.put("data", updatedDevice);
         return response;
     }
+
+//    public Map<String, Object> updateDevice(Device device) {
+//        logger.info("Service: Updating device with Name: {}", device.getDeviceName());
+//
+//        // Validate input
+//        validateDevice(device);
+//
+//        // Update device details in repository
+//        String deviceId = device.getDeviceId();
+//        Device existingDevice = deviceRepository.getDeviceById(deviceId);
+//        Integer changesInShelfPositions = device.getTotalShelfPositions() - existingDevice.getTotalShelfPositions();
+//        if (changesInShelfPositions > 0) {
+//            shelfPositionService.createShelfPositions(deviceId, changesInShelfPositions, existingDevice.getTotalShelfPositions());
+//        } else if (changesInShelfPositions < 0) {
+//            shelfPositionService.deleteShelfPositions(deviceId, changesInShelfPositions, existingDevice.getTotalShelfPositions());
+//        }
+//
+//        Device updatedDevice = deviceRepository.updateDevice(deviceId, device);
+//
+//        if (updatedDevice == null) {
+//            throw new NotFoundException("Device not found with Name: " + device.getDeviceName());
+//        }
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("success", true);
+//        response.put("message", "Device updated successfully");
+//        response.put("data", updatedDevice);
+//        return response;
+//    }
 
     public Map<String, Object> deleteDevice(String deviceId) {
         logger.info("Service: Soft deleting device with ID: {}", deviceId);

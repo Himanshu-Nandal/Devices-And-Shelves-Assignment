@@ -24,35 +24,35 @@ public class ShelfController {
     }
 
     // CRUD
-    @PostMapping("/shelves")
+    @PostMapping("/create")
     public ResponseEntity<Map<String, Object>> createShelf(@RequestBody Shelf shelf) {
         logger.info("Controller: Creating Shelf: {}", shelf.getShelfName());
         Map<String, Object> response = shelfService.createShelf(shelf);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{shelfId}")
     public ResponseEntity<Map<String, Object>> getShelfById(@PathVariable String shelfId) {
         logger.info("Controller: Fetching shelf with id: {}", shelfId);
-        return new ResponseEntity<>(shelfService.getShelfById(shelfId), HttpStatus.FOUND);
+        return new ResponseEntity<>(shelfService.getShelfById(shelfId), HttpStatus.OK);
     }
 
-    @GetMapping("/{shelfName}")
+    @GetMapping("/search/{shelfName}")
     public ResponseEntity<Map<String, Object>> getShelfByName(@PathVariable String shelfName) {
         logger.info("Controller: Fetching shelf with Name: {}", shelfName);
-        return new ResponseEntity<>(shelfService.getShelfByName(shelfName), HttpStatus.FOUND);
+        return new ResponseEntity<>(shelfService.getShelfByName(shelfName), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateShelf(@PathVariable Shelf shelf) {
+    @PutMapping("/{shelfId}")
+    public ResponseEntity<Map<String, Object>> updateShelf(@PathVariable String shelfId, @RequestBody Shelf shelf) {
         logger.info("Controller: Updating shelf with Name: {}", shelf.getShelfName());
-        return new ResponseEntity<>(shelfService.updateShelf(shelf), HttpStatus.OK);
+        return new ResponseEntity<>(shelfService.updateShelf(shelfId, shelf), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{shelfId}")
     public ResponseEntity<Map<String, Object>> deleteShelf(@PathVariable String shelfId) {
         logger.info("Controller: Deleting shelf with id: {}", shelfId);
-        return new ResponseEntity<>(shelfService.deleteShelf(shelfId), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(shelfService.deleteShelf(shelfId), HttpStatus.OK);
     }
 
 }

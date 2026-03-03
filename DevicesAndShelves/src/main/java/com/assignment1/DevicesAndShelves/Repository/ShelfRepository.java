@@ -8,23 +8,27 @@ import org.neo4j.driver.Session;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 
+@Repository
 public class ShelfRepository {
     private static final Logger logger = LoggerFactory.getLogger(ShelfRepository.class);
     private final Driver driver;
 
+    @Autowired
     public ShelfRepository(Driver driver) {
         this.driver = driver;
     }
 
     public void createShelf(Shelf shelf) {
-        try (var session = driver.session()) {
+        try (Session session = driver.session()) {
             session.executeWrite(tx -> {
                 tx.run("""
                     MERGE (s:Shelf {
-                        shelfId: randomUUID(),
+                        shelfId: $shelfId,
                         shelfName: $shelfName,
                         partNumber: $partNumber,
                         imageUrl: $imageUrl,
@@ -33,9 +37,10 @@ public class ShelfRepository {
                         updatedAt: datetime()
                     })
                     """, Map.of(
+                    "shelfId", shelf.getShelfId(),
                     "shelfName", shelf.getShelfName(),
                     "partNumber", shelf.getPartNumber(),
-                    "imageUrl", shelf.getImageUrl()
+                    "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : ""
                 ));
                 return null;
             });
@@ -112,7 +117,7 @@ public class ShelfRepository {
                         "shelfId", shelf.getShelfId(),
                         "shelfName", shelf.getShelfName(),
                         "partNumber", shelf.getPartNumber(),
-                        "imageUrl", shelf.getImageUrl()
+                        "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : ""
                 ));
                 if (result.hasNext()) {
                     Record record = result.next();

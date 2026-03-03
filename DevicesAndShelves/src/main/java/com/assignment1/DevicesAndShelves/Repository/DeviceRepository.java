@@ -46,6 +46,7 @@ public class DeviceRepository {
                     MERGE (sp:ShelfPosition {
                         shelfPositionId: randomUUID(),
                         deviceId: $deviceId,
+                        shelfId: ""
                         index: position,
                         isOccupied: false,
                         isDeleted: false,
@@ -144,11 +145,11 @@ public class DeviceRepository {
                         MATCH (d:Device {deviceId: $deviceId, isDeleted: false})
                         SET d.isDeleted = true, d.updatedAt = datetime()
                         WITH d
-                        OPTIONAL MATCH (d)-[HAS]->(sp:ShelfPosition {isDeleted: false})
+                        OPTIONAL MATCH (d)-[:HAS]->(sp:ShelfPosition {isDeleted: false})
                         SET sp.isDeleted = true, sp.updatedAt = datetime()
-                        WITH sp, d
-                        OPTIONAL MATCH (sp)-[r:HAS]->(s:Shelf {isDeleted: false})
-                        DETACH r
+                        WITH d
+                        OPTIONAL MATCH (d)-[:HAS]->(:ShelfPosition)-[r:HAS]->(s:Shelf {isDeleted: false})
+                        DELETE r
                         RETURN d
                         """, Map.of(
                         "deviceId", deviceId

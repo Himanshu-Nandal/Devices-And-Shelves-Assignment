@@ -6,15 +6,18 @@ import com.assignment1.DevicesAndShelves.Models.Shelf;
 import com.assignment1.DevicesAndShelves.Repository.ShelfRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class ShelfService {
     private static final Logger logger = LoggerFactory.getLogger(ShelfService.class);
     private final ShelfRepository shelfRepository;
 
+    @Autowired
     public ShelfService(ShelfRepository shelfRepository) {
         this.shelfRepository = shelfRepository;
     }
@@ -29,6 +32,12 @@ public class ShelfService {
         if (shelf.getPartNumber() == null || shelf.getPartNumber().isEmpty()) {
             throw new BadRequestException("Part number is required");
         }
+        if(shelfRepository.getShelfByName(shelf.getShelfName()) != null){
+            throw new BadRequestException("Shelf with the same name already exists");
+        }
+
+        // Generate UUID for shelf
+        shelf.setShelfId(UUID.randomUUID().toString());
 
         // Create shelf in repository
         shelfRepository.createShelf(shelf);
@@ -82,20 +91,29 @@ public class ShelfService {
         );
     }
 
-    public Map<String, Object> updateShelf(Shelf shelf) {
-        logger.info("Service: Updating shelf with id: {}", shelf);
+    public Map<String, Object> updateShelf(String shelfId, Shelf shelf) {
+        logger.info("Service: Updating shelf with id: {}", shelfId);
 
         //validate input
-        if (shelf == null || shelf.getShelfName().isEmpty()) {
+        if (shelfId == null || shelfId.isEmpty()) {
+            throw new BadRequestException("Shelf ID is required");
+        }
+        if (shelf == null || shelf.getShelfName() == null || shelf.getShelfName().isEmpty()) {
             throw new BadRequestException("Shelf with Shelf Name is required");
         }
 
+        // Set the shelfId from the path variable onto the shelf object
+        shelf.setShelfId(shelfId);
+
         // Update shelf in repository
-        Shelf shelfFound = shelfRepository.updateShelf(shelf);
+        Shelf updatedShelf = shelfRepository.updateShelf(shelf);
+        if (updatedShelf == null) {
+            throw new NotFoundException("Shelf not found with ID: " + shelfId);
+        }
         return Map.of(
                 "success", true,
                 "message", "Shelf updated successfully",
-                "data", shelf
+                "data", updatedShelf
         );
     }
 
