@@ -1,5 +1,6 @@
 package com.assignment1.DevicesAndShelves.Repository;
 
+import com.assignment1.DevicesAndShelves.Exceptions.NotFoundException;
 import com.assignment1.DevicesAndShelves.Models.Device;
 import org.neo4j.driver.*;
 import org.neo4j.driver.Record;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -69,7 +69,7 @@ public class DeviceRepository {
             logger.info("Device created successfully: {}", device.getDeviceId());
         } catch (Exception e) {
             logger.error("Error creating device: {}", e.getMessage());
-            throw new RuntimeException("Error creating device", e);
+            throw new NotFoundException("Error creating device" + e);
         }
     }
 
@@ -96,7 +96,7 @@ public class DeviceRepository {
             });
         } catch (Exception e) {
             logger.error("Error fetching device with ID {}: {}", deviceId, e.getMessage());
-            throw new RuntimeException("Error fetching device with ID: " + deviceId, e);
+            throw new NotFoundException("Error fetching device with ID: " + deviceId + e);
         }
     }
 
@@ -134,7 +134,7 @@ public class DeviceRepository {
             });
         } catch (Exception e) {
             logger.error("Error updating device with ID {}: {}", deviceId, e.getMessage());
-            throw new RuntimeException("Error updating device with ID: " + deviceId, e);
+            throw new NotFoundException("Error updating device with ID: " + deviceId + e);
         }
     }
 
@@ -164,7 +164,7 @@ public class DeviceRepository {
             });
         } catch (Exception e) {
             logger.error("Error soft deleting device with ID {}: {}", deviceId, e.getMessage());
-            throw new RuntimeException("Error soft deleting device with ID: " + deviceId, e);
+            throw new NotFoundException("Error soft deleting device with ID: " + deviceId + e);
         }
     }
 
@@ -191,7 +191,43 @@ public class DeviceRepository {
             });
         } catch (Exception e) {
             logger.error("Error fetching device with Name {}: {}", deviceName, e.getMessage());
-            throw new RuntimeException("Error fetching device with Name: " + deviceName, e);
+            throw new NotFoundException("Error fetching device with Name: " + deviceName + e);
+        }
+    }
+
+    public List<Device> getAllDevices(int page, int size, String search, boolean isDeleted) {
+        logger.info("Repository: Fetching all devices with filters - page: {}, size: {}, search: {}, isDeleted: {}", page, size, search, isDeleted);
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                Result result = tx.run("""
+                        MATCH (d:Device)
+                        WHERE d.isDeleted = $isDeleted AND ($search IS NULL OR d.deviceId CONTAINS $search OR d.deviceName CONTAINS $search)
+                        OPTIONAL MATCH (d)-[HAS]->(sp:ShelfPosition {isDeleted: false})
+                        WITH d, collect(sp) AS shelfPositions
+                        RETURN d
+                        ORDER BY d.createdAt DESC
+                        SKIP $skip
+                        LIMIT $limit
+                        """, Map.of(
+                        "isDeleted", isDeleted,
+                        "search", search,
+                        "skip", page * size,
+                        "limit", size
+                ));
+                List<Device> devices = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record record = result.next();
+                    Node deviceNode = record.get("d").asNode();
+                    devices.add(Device.from(deviceNode));
+                }
+                logger.info("Devices fetched successfully with filters - page: {}, size: {}, search: {}, isDeleted: {}. Total devices fetched: {}",
+                        page, size, search, isDeleted, devices.size());
+                return devices;
+            });
+        } catch (Exception e) {
+            logger.error("Error fetching devices with filters - page: {}, size: {}, search: {}, isDeleted: {}: {}",
+                    page, size, search, isDeleted, e.getMessage());
+            throw new NotFoundException("Error fetching devices with filters" + e.getMessage());
         }
     }
 }

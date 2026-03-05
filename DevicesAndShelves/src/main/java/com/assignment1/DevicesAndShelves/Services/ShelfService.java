@@ -132,4 +132,28 @@ public class ShelfService {
                 "message", "Shelf deleted successfully"
         );
     }
+
+    public Map<String, Object> getAllShelves(int page, int size, String search, boolean isDeleted) {
+        logger.info("Service: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
+                page, size, search, isDeleted);
+
+        //validate input
+        if (page < 0) {
+            throw new BadRequestException("Page number cannot be negative");
+        }
+        if (size <= 0) {
+            throw new BadRequestException("Page size must be greater than zero");
+        }
+
+        // Fetch shelves from repository
+        Map<String, Object> response = shelfRepository.getAllShelves(page, size, search, isDeleted);
+        return Map.of(
+                "success", true,
+                "message", "Shelves fetched successfully",
+                "data", response.get("shelves"),
+                "totalItems", response.get("totalItems"),
+                "totalPages", response.get("totalPages"),
+                "currentPage", response.get("currentPage")
+        );
+    }
 }

@@ -1,1 +1,33 @@
-<p>sidebar.component works!</p>
+<aside class="sidebar">
+  <div class="dropdown-section">
+    <button class="dropdown-header" (click)="toggleDevices()">
+      <span class="dropdown-title">My Devices</span>
+    </button>
+
+    @if (devicesOpen()) {
+      <div class="dropdown-list">
+          @for (device of devices(); track device.name) {
+            <a >
+              <span class="dropdown-item">{{ device.name }}</span>
+            </a>
+          }
+      </div>
+    }
+  </div>
+
+  <div class="dropdown-section">
+    <button class="dropdown-header" (click)="toggleShelves()">
+      <span class="dropdown-title">My Shelves</span>
+    </button>
+
+    @if (shelvesOpen()) {
+      <div class="dropdown-list">
+          @for (shelf of shelves(); track shelf.name) {
+            <a >
+              <span class="dropdown-item">{{ shelf.name }}</span>
+            </a>
+          }
+      </div>
+    }
+  </div>
+</aside>

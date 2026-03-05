@@ -41,22 +41,19 @@ public class DeviceController {
     }
 
 
-//
-//    // for pagination of devices on landing page of the client
-//    @GetMapping
-//    public ResponseEntity<Map<String, Object>> getAllDevices(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size,
-//            @RequestParam(required = false) String deviceType,
-//            @RequestParam(required = false) String buildingName,
-//            @RequestParam(defaultValue = "false") boolean isDeleted
-//    ) {
-//        logger.info("Controller: Fetching devices with filters - page: {}, size: {}, deviceType: {}, buildingName: {}, isDeleted: {}",
-//                page, size, deviceType, buildingName, isDeleted);
-//        Map<String, Object> response = deviceService.getAllDevices(page, size, deviceType, buildingName, isDeleted);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-//
+    // for pagination of devices on landing page of the client
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getAllDevices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "false") boolean isDeleted
+    ) {
+        logger.info("Controller: Fetching devices with filters - page: {}, size: {}, deviceId: {}, isDeleted: {}",
+                page, size, search, isDeleted);
+        Map<String, Object> response = deviceService.getAllDevices(page, size, search, isDeleted);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 
     // To update a device's details (except deviceId)
@@ -66,11 +63,6 @@ public class DeviceController {
         Map<String, Object> response = deviceService.updateDevice(deviceId, device);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-//    public ResponseEntity<Map<String, Object>> updateDevice(@RequestBody Device device) {
-//        logger.info("Updating device with ID: {}");
-//        Map<String, Object> response = deviceService.updateDevice(device);
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
 
 
     // Soft delete a device by setting isDeleted to true

@@ -1,1 +1,19 @@
-<p>navbar.component works!</p>
+<div class="navbar">
+  <a routerLink="/" class="logo">
+    <span class="logo-text">MyApp</span>
+  </a>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-links">
+    <a routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{ exact: true }">
+      <span>Home</span>
+    </a>
+    <a routerLink="/about" routerLinkActive="active-link">
+      <span>About</span>
+    </a>
+    <a routerLink="/profile" routerLinkActive="active-link">
+      <span>Profile</span>
+    </a>
+  </nav>
+</div>

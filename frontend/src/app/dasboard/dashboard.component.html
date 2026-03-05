@@ -1,0 +1,77 @@
+<div class="dashboard">
+    <!-- Device Section -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Your Devices</h2>
+            
+            <div class="section-actions">
+                <input class="search-field" 
+                    [(ngModel)]="deviceSearch" 
+                    (keyup.enter)="onDeviceSearch()" 
+                    placeholder="Search by id"
+                />
+                <button class="addButton" (click)="onAddDevice()">Add Device</button>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            @for (device of devices(); track device.deviceId) {
+                <div class="item-card">
+                    <div class="card-img">
+                        <img src="{{device.imageUrl}}" alt="{{device.deviceName}}">
+                    </div>
+                    <div class="card-content">
+                        <h3>{{device.deviceName}}</h3>
+                        <span>{{device.deviceType}}</span>
+                    </div>
+                </div> 
+            } @empty {
+                <p class="empty-message">No devices found.</p>
+            }
+        </div>
+
+        <div class="pagination">
+            <button (click)="prevDevicePage()" [disabled]="devicePage() === 1">Previous</button>
+            <span>Page {{devicePage()}} of {{deviceTotalPages()}}</span>
+            <button (click)="nextDevicePage()" [disabled]="devicePage() === deviceTotalPages()">Next</button>
+        </div>
+    </section>
+
+    <!-- Shelf Section -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Your Shelves</h2>
+
+            <div class="section-actions">
+                <input class="search-field" 
+                    [(ngModel)]="shelfSearch" 
+                    (keyup.enter)="onShelfSearch()" 
+                    placeholder="Search by id"
+                />
+
+                <button class="addButton" (click)="onAddShelf()">Add Shelf</button>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            @for (shelf of shelves(); track shelf.shelfId) {
+                <div class="item-card">
+                    <div class="card-img">
+                        <img src="{{shelf.imageUrl}}" alt="{{shelf.shelfName}}">
+                    </div>
+                    <div class="card-content">
+                        <h3>{{shelf.shelfName}}</h3>
+                    </div>
+                </div> 
+            } @empty {
+                <p class="empty-message">No shelves found.</p>
+            }
+        </div>
+
+        <div class="pagination">
+            <button (click)="prevShelfPage()" [disabled]="shelfPage() === 1">Previous</button>
+            <span>Page {{shelfPage()}} of {{shelfTotalPages()}}</span>
+            <button (click)="nextShelfPage()" [disabled]="shelfPage() === shelfTotalPages()">Next</button>
+        </div>
+    </section>
+</div>

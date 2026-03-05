@@ -217,4 +217,25 @@ public class DeviceService {
         response.put("data", device);
         return response;
     }
+
+    public Map<String, Object> getAllDevices(int page, int size, String search, boolean isDeleted) {
+        logger.info("Service: Fetching devices with filters - page: {}, size: {}, deviceId: {}, isDeleted: {}",
+                page, size, search, isDeleted);
+
+        // Validate input
+        if (page < 0) {
+            throw new BadRequestException("Page number cannot be negative");
+        }
+        if (size <= 0) {
+            throw new BadRequestException("Page size must be greater than 0");
+        }
+
+        // Fetch devices from repository
+        List<Device> devices = deviceRepository.getAllDevices(page, size, search, isDeleted);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Devices fetched successfully");
+        response.put("data", devices);
+        return response;
+    }
 }

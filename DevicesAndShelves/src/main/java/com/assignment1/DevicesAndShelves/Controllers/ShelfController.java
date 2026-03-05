@@ -55,4 +55,16 @@ public class ShelfController {
         return new ResponseEntity<>(shelfService.deleteShelf(shelfId), HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getAllShelves(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "false") boolean isDeleted
+    ) {
+        logger.info("Controller: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
+                page, size, search, isDeleted);
+        return new ResponseEntity<>(shelfService.getAllShelves(page, size, search, isDeleted), HttpStatus.OK);
+    }
+
 }

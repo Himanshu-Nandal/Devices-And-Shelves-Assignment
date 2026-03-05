@@ -1,5 +1,6 @@
 package com.assignment1.DevicesAndShelves.Repository;
 
+import com.assignment1.DevicesAndShelves.Exceptions.NotFoundException;
 import com.assignment1.DevicesAndShelves.Models.Shelf;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -153,6 +155,44 @@ public class ShelfRepository {
         } catch (Exception e) {
             logger.error("Error deleting shelf with ID {}: {}", shelfId, e.getMessage());
             throw new RuntimeException("Error deleting shelf with ID: " + shelfId, e);
+        }
+    }
+
+    public Map<String, Object> getAllShelves(int page, int size, String search, boolean isDeleted) {
+        logger.info("Repository: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
+                page, size, search, isDeleted);
+        try(Session session = driver.session()){
+            return session.executeRead(tx -> {
+                Result result = tx.run("""
+                    MATCH (s:Shelf)
+                    WHERE s.isDeleted = $isDeleted
+                    AND ($search IS NULL OR s.shelfName CONTAINS $search OR s.shelfId CONTAINS $search)
+                    RETURN s
+                    ORDER BY s.createdAt DESC
+                    SKIP $skip
+                    LIMIT $limit
+                    """, Map.of(
+                    "isDeleted", isDeleted,
+                    "search", search,
+                    "skip", page * size,
+                    "limit", size
+                ));
+                List<Shelf> shelves = result.list(record -> Shelf.from(record.get("s").asNode()));
+                logger.info("Shelves fetched successfully with filters - page: {}, size: {}, search: {}, isDeleted: {}",
+                        page, size, search, isDeleted);
+                return Map.of(
+                        "success", true,
+                        "message", "Shelves fetched successfully",
+                        "data", shelves,
+                        "page", page,
+                        "size", size,
+                        "total", shelves.size()
+                );
+            });
+        } catch (Exception e) {
+            logger.error("Error fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}: {}",
+                    page, size, search, isDeleted, e.getMessage());
+            throw new NotFoundException("Error fetching shelves with filters" + e);
         }
     }
 }
