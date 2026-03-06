@@ -163,30 +163,37 @@ public class ShelfRepository {
                 page, size, search, isDeleted);
         try(Session session = driver.session()){
             return session.executeRead(tx -> {
+                Result countresult = tx.run("""
+                    MATCH (s:Shelf)
+                    WHERE s.isDeleted = $isDeleted
+                    AND ($search = "" OR toUpper(s.shelfName) CONTAINS toUpper($search) OR toUpper(s.shelfId) CONTAINS toUpper($search))
+                    RETURN count(s) AS totalCount
+                    """, Map.of(
+                    "isDeleted", isDeleted,
+                    "search", search == null ? "" : search
+                ));
+                int totalCount = countresult.single().get("totalCount").asInt();
+
                 Result result = tx.run("""
                     MATCH (s:Shelf)
                     WHERE s.isDeleted = $isDeleted
-                    AND ($search IS NULL OR s.shelfName CONTAINS $search OR s.shelfId CONTAINS $search)
+                    AND ($search = "" OR toUpper(s.shelfName) CONTAINS toUpper($search) OR toUpper(s.shelfId) CONTAINS toUpper($search))
                     RETURN s
                     ORDER BY s.createdAt DESC
                     SKIP $skip
                     LIMIT $limit
                     """, Map.of(
                     "isDeleted", isDeleted,
-                    "search", search,
-                    "skip", page * size,
+                    "search", search== null ? "" : search,
+                    "skip", (page-1) * size,
                     "limit", size
                 ));
                 List<Shelf> shelves = result.list(record -> Shelf.from(record.get("s").asNode()));
                 logger.info("Shelves fetched successfully with filters - page: {}, size: {}, search: {}, isDeleted: {}",
                         page, size, search, isDeleted);
                 return Map.of(
-                        "success", true,
-                        "message", "Shelves fetched successfully",
-                        "data", shelves,
-                        "page", page,
-                        "size", size,
-                        "total", shelves.size()
+                        "shelves", shelves,
+                        "totalCount", totalCount
                 );
             });
         } catch (Exception e) {

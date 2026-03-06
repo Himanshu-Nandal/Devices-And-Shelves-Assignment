@@ -44,7 +44,7 @@ public class DeviceController {
     // for pagination of devices on landing page of the client
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllDevices(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "false") boolean isDeleted

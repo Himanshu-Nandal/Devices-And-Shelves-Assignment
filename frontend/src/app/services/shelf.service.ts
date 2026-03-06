@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Page } from "../models/shelf.model";
+import { Page } from "../models/device.model";
 import { Shelf } from "../models/shelf.model";
 import { Observable } from "rxjs";
 

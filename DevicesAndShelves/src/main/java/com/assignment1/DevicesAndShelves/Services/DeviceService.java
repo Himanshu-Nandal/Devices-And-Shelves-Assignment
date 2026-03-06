@@ -45,7 +45,7 @@ public class DeviceService {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Device created successfully");
-        response.put("data", device);
+        response.put("content", device);
         return response;
 
     }
@@ -91,7 +91,7 @@ public class DeviceService {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Device found successfully");
-        response.put("data", device);
+        response.put("content", device);
         return response;
     }
 
@@ -144,7 +144,7 @@ public class DeviceService {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Device updated successfully");
-        response.put("data", updatedDevice);
+        response.put("content", updatedDevice);
         return response;
     }
 
@@ -214,7 +214,7 @@ public class DeviceService {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Device found successfully");
-        response.put("data", device);
+        response.put("content", device);
         return response;
     }
 
@@ -223,19 +223,22 @@ public class DeviceService {
                 page, size, search, isDeleted);
 
         // Validate input
-        if (page < 0) {
-            throw new BadRequestException("Page number cannot be negative");
+        if (page < 1) {
+            throw new BadRequestException("Page number must be at least 1");
         }
         if (size <= 0) {
             throw new BadRequestException("Page size must be greater than 0");
         }
 
         // Fetch devices from repository
-        List<Device> devices = deviceRepository.getAllDevices(page, size, search, isDeleted);
+        Map<String, Object> record = deviceRepository.getAllDevices(page, size, search, isDeleted);
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Devices fetched successfully");
-        response.put("data", devices);
+        response.put("content", record.get("devices"));
+        response.put("totalElements", record.get("totalCount"));
+        response.put("pageNumber", page);
+        response.put("pageSize", size);
         return response;
     }
 }

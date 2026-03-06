@@ -13,33 +13,50 @@ import { ShelfService } from '../services/shelf.service';
 } as any)
 export class DeviceCreateComponent implements OnInit {
   form!: FormGroup;
-  availableShelves = signal<Shelf[]>([]);
-
   positionCount = signal(0);
 
   constructor(
     private fb: FormBuilder,
     private deviceService: DeviceService,
-    private shelfService: ShelfService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      model: ['', Validators.required],
-      totalPositions: [0, [Validators.required, Validators.min(1), Validators.max(50)]],
-      positions: this.fb.array([]),
+      deviceName: ['', Validators.required],
+      partNumber: ['', Validators.required],
+      buildingName: ['', Validators.required],
+      deviceType: ['', Validators.required],
+      totalShelfPositions: [0, [Validators.required, Validators.min(1), Validators.max(50)]],
+      imageUrl: ['']
+      
     });
 
-    this.loadAvailableShelves();
-  }
-  
-  get positions(): FormArray {
-    return this.form.get('positions') as FormArray;
   }
 
-  public loadAvailableShelves(): void {
-    
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const payload = {
+      deviceName: this.form.value.deviceName,
+      partNumber: this.form.value.partNumber,
+      buildingName: this.form.value.buildingName,
+      deviceType: this.form.value.deviceType,
+      totalShelfPositions: this.form.value.totalShelfPositions,
+      imageUrl: this.form.value.imageUrl
+    };
+
+    this.deviceService.createDevice(payload).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: (err) => console.error('Failed to create device', err),
+      complete: () => console.log('Device creation process completed')
+    });
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/']);
   }
 }

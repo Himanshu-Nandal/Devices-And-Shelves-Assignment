@@ -1,1 +1,70 @@
-<p>device-create.component works!</p>
+<div class="device-create-wrapper">
+    <h1>Create New Device</h1>
+    <h2>Fill in the details properly</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="device-form">
+        
+        <div class="form-row">
+            <div>
+                <label for="deviceName" class="form-field">
+                    Device Name:
+                    <input id="deviceName" formControlName="deviceName" placeholder="e.g. Router1"/>
+                    @if(form.get('deviceName')?.invalid && form.get('deviceName')?.touched){
+                        <div class="error-message">Device Name is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="partNumber" class="form-field">
+                    Part Number:
+                    <input id="partNumber" formControlName="partNumber" placeholder="e.g. PN12345"/>
+                    @if(form.get('partNumber')?.invalid && form.get('partNumber')?.touched){
+                        <div class="error-message">Part Number is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="buildingName" class="form-field">
+                    Building Name:
+                    <input id="buildingName" formControlName="buildingName" placeholder="e.g. Main Office"/>
+                    @if(form.get('buildingName')?.invalid && form.get('buildingName')?.touched){
+                        <div class="error-message">Building Name is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="deviceType" class="form-field">
+                    Device Type:
+                    <input id="deviceType" formControlName="deviceType" placeholder="e.g. Router"/>
+                    @if(form.get('deviceType')?.invalid && form.get('deviceType')?.touched){
+                        <div class="error-message">Device Type is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="totalShelfPositions" class="form-field">
+                    Total Shelf Positions:
+                    <input id="totalShelfPositions" formControlName="totalShelfPositions" type="number" placeholder="e.g. 10"/>
+                    @if(form.get('totalShelfPositions')?.invalid && form.get('totalShelfPositions')?.touched){
+                        <div class="error-message">
+                            Total Shelf Positions is required and must be between 1 and 50.
+                        </div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="imageUrl" class="form-field">
+                    Image URL:
+                    <input id="imageUrl" formControlName="imageUrl" placeholder="e.g. http://example.com/image.jpg"/>
+                </label>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="create-button">
+                Create Device
+            </button>
+            <button type="button" class="cancel-button" (click)="onCancel()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class ShelfService {
     }
 
     public Map<String, Object> createShelf(Shelf shelf) {
-        logger.info("Creating shelf in service: {}", shelf.getShelfName());
+        logger.info("Service: Creating shelf in service: {}", shelf.getShelfName());
 
         //validate input
         if (shelf.getShelfName() == null || shelf.getShelfName().isEmpty()) {
@@ -44,7 +45,7 @@ public class ShelfService {
         return Map.of(
                 "success", true,
                 "message", "Shelf created successfully",
-                "data", shelf
+                "content", shelf
         );
     }
 
@@ -65,7 +66,7 @@ public class ShelfService {
         return Map.of(
                 "success", true,
                 "message", "Shelf fetched successfully",
-                "data", shelf
+                "content", shelf
         );
     }
 
@@ -87,7 +88,7 @@ public class ShelfService {
         return Map.of(
                 "success", true,
                 "message", "Shelf fetched successfully",
-                "data", shelf
+                "content", shelf
         );
     }
 
@@ -113,7 +114,7 @@ public class ShelfService {
         return Map.of(
                 "success", true,
                 "message", "Shelf updated successfully",
-                "data", updatedShelf
+                "content", updatedShelf
         );
     }
 
@@ -138,7 +139,7 @@ public class ShelfService {
                 page, size, search, isDeleted);
 
         //validate input
-        if (page < 0) {
+        if (page < 1) {
             throw new BadRequestException("Page number cannot be negative");
         }
         if (size <= 0) {
@@ -150,10 +151,10 @@ public class ShelfService {
         return Map.of(
                 "success", true,
                 "message", "Shelves fetched successfully",
-                "data", response.get("shelves"),
-                "totalItems", response.get("totalItems"),
-                "totalPages", response.get("totalPages"),
-                "currentPage", response.get("currentPage")
+                "content", response.get("shelves"),
+                "totalElements", response.get("totalCount"),
+                "pageNumber", page,
+                "pageSize", size
         );
     }
 }

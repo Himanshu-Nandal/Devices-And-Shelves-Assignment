@@ -1,17 +1,17 @@
 export interface Shelf {
-    shelfId: number;
+    // shelfId: number;
     shelfName: string;
     partNumber: string;
     imageUrl: string;
-    isDeleted: string;
-    createdAt: string;
-    updatedAt: string;
+//     isDeleted: string;
+//     createdAt: string;
+//     updatedAt: string;
 }
 
-export interface Page<T> {
-    content: T[];
-    totalElements: number;
-    totalPages: number;
-    pageNumber: number;
-    pageSize: number;
-}
+// export interface Page<T> {
+//     content: T[];
+//     totalElements: number;
+//     totalPages: number;
+//     pageNumber: number;
+//     pageSize: number;
+// }

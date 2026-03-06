@@ -33,7 +33,7 @@
         <div class="pagination">
             <button (click)="prevDevicePage()" [disabled]="devicePage() === 1">Previous</button>
             <span>Page {{devicePage()}} of {{deviceTotalPages()}}</span>
-            <button (click)="nextDevicePage()" [disabled]="devicePage() === deviceTotalPages()">Next</button>
+            <button (click)="nextDevicePage()" [disabled]="devicePage() >= deviceTotalPages()">Next</button>
         </div>
     </section>
 
@@ -71,7 +71,7 @@
         <div class="pagination">
             <button (click)="prevShelfPage()" [disabled]="shelfPage() === 1">Previous</button>
             <span>Page {{shelfPage()}} of {{shelfTotalPages()}}</span>
-            <button (click)="nextShelfPage()" [disabled]="shelfPage() === shelfTotalPages()">Next</button>
+            <button (click)="nextShelfPage()" [disabled]="shelfPage() >= shelfTotalPages()">Next</button>
         </div>
     </section>
 </div>

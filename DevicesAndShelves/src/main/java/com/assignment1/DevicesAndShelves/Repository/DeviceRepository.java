@@ -46,7 +46,7 @@ public class DeviceRepository {
                     MERGE (sp:ShelfPosition {
                         shelfPositionId: randomUUID(),
                         deviceId: $deviceId,
-                        shelfId: ""
+                        shelfId: "",
                         index: position,
                         isOccupied: false,
                         isDeleted: false,
@@ -195,38 +195,62 @@ public class DeviceRepository {
         }
     }
 
-    public List<Device> getAllDevices(int page, int size, String search, boolean isDeleted) {
+    public Map<String, Object> getAllDevices(int page, int size, String search, boolean isDeleted) {
         logger.info("Repository: Fetching all devices with filters - page: {}, size: {}, search: {}, isDeleted: {}", page, size, search, isDeleted);
         try (Session session = driver.session()) {
             return session.executeRead(tx -> {
-                Result result = tx.run("""
-                        MATCH (d:Device)
-                        WHERE d.isDeleted = $isDeleted AND ($search IS NULL OR d.deviceId CONTAINS $search OR d.deviceName CONTAINS $search)
-                        OPTIONAL MATCH (d)-[HAS]->(sp:ShelfPosition {isDeleted: false})
-                        WITH d, collect(sp) AS shelfPositions
-                        RETURN d
-                        ORDER BY d.createdAt DESC
-                        SKIP $skip
-                        LIMIT $limit
-                        """, Map.of(
+                Result countResult = tx.run("""
+                MATCH (d:Device)
+                WHERE d.isDeleted = $isDeleted
+                AND ($search = "" 
+                    OR toUpper(d.deviceId) CONTAINS toUpper($search) 
+                    OR toUpper(d.deviceName) CONTAINS toUpper($search))
+                RETURN count(d) AS totalCount
+                """, Map.of(
                         "isDeleted", isDeleted,
-                        "search", search,
-                        "skip", page * size,
+                        "search", search != null ? search : ""
+                ));
+                int totalCount = countResult.single().get("totalCount").asInt();
+
+                Result result = tx.run("""
+                MATCH (d:Device)
+                WHERE d.isDeleted = $isDeleted
+                AND ($search = "" 
+                    OR toUpper(d.deviceId) CONTAINS toUpper($search) 
+                    OR toUpper(d.deviceName) CONTAINS toUpper($search))
+                OPTIONAL MATCH (d)-[:HAS]->(sp:ShelfPosition {isDeleted: false})
+                WITH d, collect(sp) AS shelfPositions
+                ORDER BY d.createdAt DESC
+                SKIP $skip
+                LIMIT $limit
+                RETURN d
+                """, Map.of(
+                        "isDeleted", isDeleted,
+                        "search", search != null ? search : "",
+                        "skip", (page - 1) * size,
                         "limit", size
                 ));
+
                 List<Device> devices = new ArrayList<>();
                 while (result.hasNext()) {
                     Record record = result.next();
                     Node deviceNode = record.get("d").asNode();
                     devices.add(Device.from(deviceNode));
                 }
-                logger.info("Devices fetched successfully with filters - page: {}, size: {}, search: {}, isDeleted: {}. Total devices fetched: {}",
-                        page, size, search, isDeleted, devices.size());
-                return devices;
+
+                logger.info("Devices fetched successfully with filters - page: {}, size: {}, search: {}, isDeleted: {}. Total devices: {}",
+                        page, size, search, isDeleted, totalCount);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("devices", devices);
+                response.put("totalCount", totalCount);
+
+                return response;
             });
         } catch (Exception e) {
-            logger.error("Error fetching devices with filters - page: {}, size: {}, search: {}, isDeleted: {}: {}",
+            logger.error("Error fetching devices with filters - page: {}, size: {}, search: {}, isDeleted: {}, e-message: {}",
                     page, size, search, isDeleted, e.getMessage());
+
             throw new NotFoundException("Error fetching devices with filters" + e.getMessage());
         }
     }

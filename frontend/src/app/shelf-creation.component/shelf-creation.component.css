@@ -1,4 +1,4 @@
-.device-create-wrapper {
+.shelf-create-wrapper {
     max-width: 800px;
     margin: 0 auto;
     border: outset;
@@ -7,7 +7,7 @@
     padding-left: 50px;
 }
 
-.device-form {
+.shelf-form {
     display: flex;
     flex-direction: column;
     gap: 8px;

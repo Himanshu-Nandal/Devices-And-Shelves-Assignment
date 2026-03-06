@@ -1,0 +1,41 @@
+<div class="shelf-create-wrapper">
+    <h1>Create New Shelf</h1>
+    <h2>Fill in the details properly</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="shelf-form">
+        
+        <div class="form-row">
+            <div>
+                <label for="shelfName" class="form-field">
+                    Shelf Name:
+                    <input id="shelfName" formControlName="shelfName" placeholder="e.g. Shelf1"/>
+                    @if(form.get('shelfName')?.invalid && form.get('shelfName')?.touched){
+                        <div class="error-message">Shelf Name is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="partNumber" class="form-field">
+                    Part Number:
+                    <input id="partNumber" formControlName="partNumber" placeholder="e.g. PN12345"/>
+                    @if(form.get('partNumber')?.invalid && form.get('partNumber')?.touched){
+                        <div class="error-message">Part Number is required.</div>
+                    }
+                </label>
+            </div>
+            <div>
+                <label for="imageUrl" class="form-field">
+                    Image URL:
+                    <input id="imageUrl" formControlName="imageUrl" placeholder="e.g. http://example.com/image.jpg"/>
+                </label>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="create-button">
+                Create Shelf
+            </button>
+            <button type="button" class="cancel-button" (click)="onCancel()">
+                Cancel
+            </button>
+        </div>
+    </form>
+</div>

@@ -57,7 +57,7 @@ public class ShelfController {
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllShelves(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "false") boolean isDeleted

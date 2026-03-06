@@ -15,17 +15,17 @@ import { FormsModule } from '@angular/forms';
 export class DashboardComponent implements OnInit {
   devices = signal<Device[]>([]);
   deviceSearch = '';
-  devicePage = signal(0);
-  devicePageSize = 6;
-  deviceTotalElements = 0;
-  deviceTotalPages = computed(() => Math.ceil(this.deviceTotalElements / this.devicePageSize));
+  devicePage = signal(1);
+  devicePageSize = signal(6);
+  deviceTotalElements = signal(0);
+  deviceTotalPages = computed(() => Math.ceil(this.deviceTotalElements() / this.devicePageSize()));
 
   shelves = signal<Shelf[]>([]);
   shelfSearch = '';
-  shelfPage = signal(0);
-  shelfPageSize = 6;
-  shelfTotalElements = 0;
-  shelfTotalPages = computed(() => Math.ceil(this.shelfTotalElements / this.shelfPageSize));
+  shelfPage = signal(1);
+  shelfPageSize = signal(6);
+  shelfTotalElements = signal(0);
+  shelfTotalPages = computed(() => Math.ceil(this.shelfTotalElements() / this.shelfPageSize()));
 
   constructor(
     private deviceService: DeviceService,
@@ -41,11 +41,11 @@ export class DashboardComponent implements OnInit {
 
   // Device methods
   public loadDevices() {
-    this.deviceService.getDevices(this.devicePage(), this.devicePageSize, this.deviceSearch)
+    this.deviceService.getDevices(this.devicePage(), this.devicePageSize(), this.deviceSearch)
     .subscribe({
       next: (page: Page<Device>) => {
         this.devices.set(page.content);
-        this.deviceTotalElements = page.totalElements;
+        this.deviceTotalElements.set(page.totalElements);
       },
       error: (err) => {
         console.error('Error loading devices:', err);
@@ -55,13 +55,13 @@ export class DashboardComponent implements OnInit {
   }
 
   public onDeviceSearch(): void {
-    this.devicePage.set(0);
+    this.devicePage.set(1);
     this.loadDevices();
   }
 
   // public onDevicePageChange(event: PageEvent): void {
-  //   this.devicePage = event.pageIndex;
-  //   this.devicePageSize = event.pageSize;
+  //   this.devicePage.set(event.pageIndex);
+  //   this.devicePageSize.set(event.pageSize);
   //   this.loadDevices();
   // }
   
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
   }
 
   public prevDevicePage() {
-    if (this.devicePage() > 0) {
+    if (this.devicePage() > 1) {
       this.devicePage.set(this.devicePage() - 1);
       this.loadDevices();
     }
@@ -84,11 +84,11 @@ export class DashboardComponent implements OnInit {
 
   // Shelf methods
   public loadShelves() {
-    this.shelfService.getShelves(this.shelfPage(), this.shelfPageSize, this.shelfSearch)
+    this.shelfService.getShelves(this.shelfPage(), this.shelfPageSize(), this.shelfSearch)
     .subscribe({
       next: (page: Page<Shelf>) => {
         this.shelves.set(page.content);
-        this.shelfTotalElements = page.totalElements;
+        this.shelfTotalElements.set(page.totalElements);
       },
       error: (err) => {
         console.error('Error loading shelves:', err);
@@ -98,13 +98,13 @@ export class DashboardComponent implements OnInit {
   }
 
   public onShelfSearch(): void {
-    this.shelfPage.set(0);
+    this.shelfPage.set(1);
     this.loadShelves();
   }
 
   // public onShelfPageChange(event: PageEvent): void {
-  //   this.shelfPage = event.pageIndex;
-  //   this.shelfPageSize = event.pageSize;
+  //   this.shelfPage.set(event.pageIndex);
+  //   this.shelfPageSize.set(event.pageSize);
   //   this.loadShelves();
   // }
 
@@ -118,7 +118,7 @@ export class DashboardComponent implements OnInit {
   }
 
   public prevShelfPage() {
-    if (this.shelfPage() > 0) {
+    if (this.shelfPage() > 1) {
       this.shelfPage.set(this.shelfPage() - 1);
       this.loadShelves();
     }
