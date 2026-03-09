@@ -29,17 +29,7 @@ export class DeviceSummaryComponent implements OnInit {
   
   public ngOnInit(): void {
     this.deviceId = this.route.snapshot.paramMap.get('id') || '';
-    // if (!this.deviceId) {
-      //   console.error('Device ID is missing in route parameters');
-      //   this.router.navigate(['/']);
-      //   return;
-      // }
-  // if(!this.deviceSummary) {
-    //   console.error('Device summary observable is null');
-    //   return;
-    // }
     this.loadDeviceSummary();
-    // this.loadShelfPositions();
   }
       
     // DEVICE METHODS
@@ -49,17 +39,6 @@ export class DeviceSummaryComponent implements OnInit {
       next: (record) => {
         this.device = record.device;
         this.shelfPositions = record.shelfPositions;
-        // if (!this.device) {
-        //   console.error('Device data is missing in the response');
-        //   return;
-        // }
-        // if (!this.device.deviceName){
-        //   console.error('Device name is missing in the response');
-        // return;
-        // }
-        // else {
-        // console.log('Loaded device summary for:', this.device.deviceName);
-        // }
         this.loadShelves();
       },
       error: (err) => {
@@ -72,7 +51,6 @@ export class DeviceSummaryComponent implements OnInit {
   public change: boolean = false;
   
   public onDeviceUpdate(): void {
-    // this.deviceService.updateDevice(this.form.deviceId, this.form).subscribe({
     this.deviceService.updateDevice(this.deviceId, this.device).subscribe({
       next: () => {
         this.change = false;
@@ -87,7 +65,6 @@ export class DeviceSummaryComponent implements OnInit {
   
   public onDeviceDelete(): void {
   if (confirm('Are you sure you want to delete this device?')) {
-    // this.deviceService.deleteDevice(this.form.deviceId).subscribe({
       this.deviceService.deleteDevice(this.deviceId).subscribe({
         next: () => {this.router.navigate(['/']);},
         error: (err) => console.error('Failed to delete device', err),
@@ -101,35 +78,11 @@ export class DeviceSummaryComponent implements OnInit {
   }
 
 
-  // SHELF POSITION METHODS
-  // public loadShelfPositions():void {
-  //   this.deviceSummary?.subscribe({
-  //     next: (record) => {
-  //       this.shelfPositions = record.shelfPositions;
-  //       // if (!this.shelfPositions) {
-  //         //   console.error('Shelf positions data is missing in the response');
-  //         //   return;
-  //         // }
-  //         this.loadShelves();
-  //     },
-  //     error: (err) => {
-  //       console.error('Failed to load device summary', err);
-  //     },
-  //     complete: () => console.log('Finished loading device summary')
-  //   });
-  // }
-        
+  // SHELF POSITION METHODS        
   public loadShelves(): void {
     this.shelfService.getShelves().subscribe({
       next: (shelves) => {
         this.availableShelves = shelves;
-        // if (!this.availableShelves) {
-        //   console.error('Shelf data is missing in the response');
-        //   return;
-        // }
-        // else {
-        //   console.log('Loaded shelves for device summary:', this.availableShelves, 'shelves available');
-        // }
       },
       error: (err) => {
         console.error('Failed to load shelves', err);

@@ -40,7 +40,7 @@ public class Neo4jConfig {
 
     // OR
 
-    // Problem 1 – Misconfigured property lookups Spring placeholders were passed directly into
+    // Problem – Misconfigured property lookups Spring placeholders were passed directly into
     // System.getProperty, so the driver always received literal strings like "${spring.neo4j.uri}",
     // causing authentication failures. Injecting the properties with @Value resolves this while
     // keeping the bean configurable.

@@ -4,7 +4,7 @@
     <h1>Device Summary</h1>
     <section>
         <div class="photo-box">
-            <img [src]="device.imageUrl || 'assets/default-device.png'" alt="Device Photo" class="device-photo"/>
+            <img [src]="device.imageUrl" alt="Device Photo" class="device-photo"/>
         </div>
         <div class="details-box">
             <h2>Device Properties</h2>
@@ -23,7 +23,6 @@
 
             <label>Total Shelf Positions</label>
             <input [(ngModel)]="device.totalShelfPositions" [readonly]="!change"/>
-            <!-- [disabled]="true" (click)="disabled = !disabled" -->
             
             <label>Photo URL</label>
             <input [(ngModel)]="device.imageUrl" [readonly]="!change"/>
