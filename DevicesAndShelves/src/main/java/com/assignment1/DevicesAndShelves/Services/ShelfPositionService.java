@@ -1,12 +1,14 @@
 package com.assignment1.DevicesAndShelves.Services;
 
 import com.assignment1.DevicesAndShelves.Exceptions.BadRequestException;
+import com.assignment1.DevicesAndShelves.Models.ShelfPosition;
 import com.assignment1.DevicesAndShelves.Repository.ShelfPositionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -41,17 +43,17 @@ public class ShelfPositionService {
 
     }
 
-    public void updateShelfPositions(String shelfPositionId, String shelfId) {
+    public ShelfPosition updateShelfPositions(String shelfPositionId, String shelfId) {
         logger.info("Service: Updating shelf positions for shelfPositionId: {} with shelfId: {}", shelfPositionId, shelfId);
 
-        if (shelfId == null || shelfId.isEmpty()) {
-            throw new BadRequestException("Shelf ID is required");
+        if (shelfId == null ) {
+            shelfId = "";
         }
         if (shelfPositionId == null || shelfPositionId.isEmpty()) {
             throw new BadRequestException("Shelf Position ID is required");
         }
 
-        shelfPositionRepository.updateShelfPositions(shelfId, shelfPositionId);
+        return shelfPositionRepository.updateShelfPositions(shelfId, shelfPositionId);
     }
 
     public Map<String, Object> getShelfPositionById(String shelfPositionId) {
@@ -64,5 +66,35 @@ public class ShelfPositionService {
             throw new BadRequestException("Shelf Position not found with ID: " + shelfPositionId);
         }
         return response;
+    }
+
+
+    public List<ShelfPosition> getShelfPositionsByDeviceId(String deviceId) {
+        logger.info("Service: Fetching shelf positions for deviceId: {}", deviceId);
+        if (deviceId == null || deviceId.isEmpty()) {
+            throw new BadRequestException("Device ID is required");
+        }
+        return shelfPositionRepository.getShelfPositionsByDeviceId(deviceId);
+    }
+
+
+    public void deleteShelfPositionById(String shelfPositionId) {
+        logger.info("Service: Deleting shelf position with id: {}", shelfPositionId);
+        if (shelfPositionId == null || shelfPositionId.isEmpty()) {
+            throw new BadRequestException("Shelf Position ID is required");
+        }
+        shelfPositionRepository.deleteShelfPositionById(shelfPositionId);
+    }
+
+    public ShelfPosition updateShelfPosition(String shelfPositionId, ShelfPosition shelfPosition) {
+
+        logger.info("Service: Updating shelf position with id: {}", shelfPositionId);
+        if (shelfPositionId == null || shelfPositionId.isEmpty()) {
+            throw new BadRequestException("Shelf Position ID is required");
+        }
+        if (shelfPosition == null) {
+            throw new BadRequestException("Shelf Position data is required");
+        }
+        return shelfPositionRepository.updateShelfPosition(shelfPositionId, shelfPosition);
     }
 }

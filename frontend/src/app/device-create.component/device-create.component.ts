@@ -23,12 +23,13 @@ export class DeviceCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.fb.group({
+      deviceId: [''],
       deviceName: ['', Validators.required],
       partNumber: ['', Validators.required],
       buildingName: ['', Validators.required],
       deviceType: ['', Validators.required],
       totalShelfPositions: [0, [Validators.required, Validators.min(1), Validators.max(50)]],
-      imageUrl: ['']
+      imageUrl: [''],
       
     });
 
@@ -41,12 +42,15 @@ export class DeviceCreateComponent implements OnInit {
     }
 
     const payload = {
+      deviceId: this.form.value.deviceId,
       deviceName: this.form.value.deviceName,
       partNumber: this.form.value.partNumber,
       buildingName: this.form.value.buildingName,
       deviceType: this.form.value.deviceType,
       totalShelfPositions: this.form.value.totalShelfPositions,
-      imageUrl: this.form.value.imageUrl
+      imageUrl: this.form.value.imageUrl,
+      createdAt: '', // Backend will set this
+      updatedAt: ''  // Backend will set this
     };
 
     this.deviceService.createDevice(payload).subscribe({

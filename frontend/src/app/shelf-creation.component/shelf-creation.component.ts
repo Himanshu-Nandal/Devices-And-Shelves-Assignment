@@ -21,10 +21,11 @@ export class ShelfCreationComponent {
 
   ngOnInit(): void {
     this.form = this.fb.group({
+      shelfId: [''],
       shelfName: ['', Validators.required],
       partNumber: ['', Validators.required],
-      imageUrl: ['']
-      
+      imageUrl: [''],
+      shelfPositionId: [''],
     });
 
   }
@@ -36,9 +37,13 @@ export class ShelfCreationComponent {
     }
 
     const payload = {
+      shelfId: this.form.value.shelfId,
       shelfName: this.form.value.shelfName,
       partNumber: this.form.value.partNumber,
-      imageUrl: this.form.value.imageUrl
+      imageUrl: this.form.value.imageUrl,
+      shelfPositionId: this.form.value.shelfPositionId,
+      createdAt: '', // Backend will set this
+      updatedAt: '',  // Backend will set this
     };
 
     this.shelfService.createShelf(payload).subscribe({

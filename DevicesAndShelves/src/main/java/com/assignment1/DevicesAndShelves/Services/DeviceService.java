@@ -3,6 +3,7 @@ package com.assignment1.DevicesAndShelves.Services;
 import com.assignment1.DevicesAndShelves.Exceptions.BadRequestException;
 import com.assignment1.DevicesAndShelves.Exceptions.NotFoundException;
 import com.assignment1.DevicesAndShelves.Models.Device;
+import com.assignment1.DevicesAndShelves.Models.ShelfPosition;
 import com.assignment1.DevicesAndShelves.Repository.DeviceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,7 @@ public class DeviceService {
 
     }
 
+
     public Map<String, Object> getDeviceById(String deviceId) {
         logger.info("Service: Fetching device with ID: {}", deviceId);
 
@@ -88,12 +90,16 @@ public class DeviceService {
             throw new NotFoundException("Device not found with ID: " + deviceId);
         }
 
+        List<ShelfPosition> shelfPositions = shelfPositionService.getShelfPositionsByDeviceId(deviceId);
+
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Device found successfully");
-        response.put("content", device);
+        response.put("device", device);
+        response.put("shelfPositions", shelfPositions);
         return response;
     }
+
 
     public Map<String, Object> updateDevice(String deviceId, Device device) {
         logger.info("Service: Updating device with ID: {}", deviceId);
@@ -177,6 +183,7 @@ public class DeviceService {
 //        return response;
 //    }
 
+
     public Map<String, Object> deleteDevice(String deviceId) {
         logger.info("Service: Soft deleting device with ID: {}", deviceId);
 
@@ -196,6 +203,7 @@ public class DeviceService {
         response.put("message", "Device deleted successfully");
         return response;
     }
+
 
     public Map<String, Object> getDeviceByName(String deviceName) {
         logger.info("Service: Fetching device with Name: {}", deviceName);
@@ -218,7 +226,8 @@ public class DeviceService {
         return response;
     }
 
-    public Map<String, Object> getAllDevices(int page, int size, String search, boolean isDeleted) {
+
+    public Map<String, Object> getDevicePage(int page, int size, String search, boolean isDeleted) {
         logger.info("Service: Fetching devices with filters - page: {}, size: {}, deviceId: {}, isDeleted: {}",
                 page, size, search, isDeleted);
 
@@ -231,7 +240,7 @@ public class DeviceService {
         }
 
         // Fetch devices from repository
-        Map<String, Object> record = deviceRepository.getAllDevices(page, size, search, isDeleted);
+        Map<String, Object> record = deviceRepository.getDevicePage(page, size, search, isDeleted);
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Devices fetched successfully");
@@ -239,6 +248,16 @@ public class DeviceService {
         response.put("totalElements", record.get("totalCount"));
         response.put("pageNumber", page);
         response.put("pageSize", size);
+        return response;
+    }
+
+    public Map<String, Object> getAllDevices() {
+        logger.info("Service: Fetching all devices");
+        List<Device> devices = deviceRepository.getAllDevices();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Devices fetched successfully");
+        response.put("devices", devices);
         return response;
     }
 }

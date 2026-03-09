@@ -1,0 +1,78 @@
+<div class="summary-page">
+    <button class="link-button" (click)="goBack()">← Back to dashboard</button>
+    <!-- Device Section -->
+    <h1>Device Summary</h1>
+    <section>
+        <div class="photo-box">
+            <img [src]="device.imageUrl || 'assets/default-device.png'" alt="Device Photo" class="device-photo"/>
+        </div>
+        <div class="details-box">
+            <h2>Device Properties</h2>
+
+            <label>Name</label>
+            <input [(ngModel)]="device.deviceName" [readonly]="!change"/>
+
+            <label>Part Number</label>
+            <input [(ngModel)]="device.partNumber" [readonly]="!change"/>
+
+            <label>Building Name</label>
+            <input [(ngModel)]="device.buildingName" [readonly]="!change"/>
+
+            <label>Device Type</label>
+            <input [(ngModel)]="device.deviceType" [readonly]="!change"/>
+
+            <label>Total Shelf Positions</label>
+            <input [(ngModel)]="device.totalShelfPositions" [readonly]="!change"/>
+            <!-- [disabled]="true" (click)="disabled = !disabled" -->
+            
+            <label>Photo URL</label>
+            <input [(ngModel)]="device.imageUrl" [readonly]="!change"/>
+
+            <label>Created At</label>
+            <input [(ngModel)]="device.createdAt" readonly="true"/>
+
+            <label>Updated At</label>
+            <input [(ngModel)]="device.updatedAt" readonly="true"/>
+
+            <div class="button-row">
+                <button class="secondary" (click)="toggleChange()">{{change ? 'Cancel' : 'Change'}}</button>
+                <button class="primary" (click)="onDeviceUpdate()">Update</button>
+                <button class="danger" (click)="onDeviceDelete()">Delete</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shelf Positions Section -->
+    <section class="positions-box">
+        <h2>Shelf Positions</h2>
+        <p class="hint">Assign or reassign a shelf for each position.</p>
+
+        <div class="positions-row">
+            @for (position of shelfPositions; track position.shelfPositionId) {
+                <div class="positions-item">
+                    <span>{{position.index}}</span>
+                    <select [(ngModel)]="position.shelfId">
+
+                        <option [value]="position.shelfId"  selected>{{position.shelfId? position.shelfName : 'No shelf assigned'}}</option>
+                        
+                        @if (position.shelfId) {
+                            <option value="" >Remove Shelf</option>
+                        }
+                        
+                        @for (shelf of availableShelves; track shelf.shelfId) {
+                            <option [value]="shelf.shelfId" >{{shelf.shelfName}}</option>
+                        }@empty {
+                            <p class="empty-state">No shelves to assign.</p>
+                        }
+
+                    </select>
+                    <button class="primary" (click)="onShelfPositionUpdate(position, position.shelfId)">{{position.shelfId ? 'Change Shelf' : 'Assign Shelf'}}</button>
+                    <button class="danger" (click)="onShelfPositionDelete(position.shelfPositionId)">Remove</button>
+                </div>
+            } @empty {
+                <p class="empty-state">No shelf positions assigned to this device.</p>
+            }
+        </div>
+
+    </section>
+</div>

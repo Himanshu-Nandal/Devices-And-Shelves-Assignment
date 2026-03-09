@@ -34,15 +34,22 @@ public class ShelfRepository {
                         shelfName: $shelfName,
                         partNumber: $partNumber,
                         imageUrl: $imageUrl,
+                        shelfPositionId: $shelfPositionId,
                         isDeleted: false,
                         createdAt: datetime(),
                         updatedAt: datetime()
                     })
+                    
+                    WITH s
+                    OPTIONAL MATCH (sp:ShelfPosition {shelfPositionId: $shelfPositionId})
+                    SET sp.shelfId = s.shelfId, sp.updatedAt = datetime()
+                    MERGE (sp)-[:HAS]->(s)
                     """, Map.of(
                     "shelfId", shelf.getShelfId(),
                     "shelfName", shelf.getShelfName(),
                     "partNumber", shelf.getPartNumber(),
-                    "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : ""
+                    "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : "",
+                    "shelfPositionId", shelf.getShelfPositionId() != null ? shelf.getShelfPositionId() : ""
                 ));
                 return null;
             });
@@ -110,16 +117,29 @@ public class ShelfRepository {
             return session.executeWrite(tx -> {
                 Result result = tx.run("""
                     MATCH (s:Shelf {shelfId: $shelfId, isDeleted: false})
+                    OPTIONAL MATCH (sp:ShelfPosition {shelfPositionId: $shelfPositionId})-[r:HAS]->(s)
+                    SET sp.shelfId = "", sp.updatedAt = datetime()
+                    DELETE r
+                    
+                    WITH s
                     SET s.shelfName = $shelfName,
                         s.partNumber = $partNumber,
                         s.imageUrl = $imageUrl,
+                        s.shelfPositionId = $shelfPositionId,
                         s.updatedAt = datetime()
+                    
+                    WITH s
+                    OPTIONAL MATCH (sp2:ShelfPosition {shelfPositionId: $shelfPositionId})
+                    SET sp2.shelfId = s.shelfId, sp.updatedAt = datetime()
+                    MERGE (sp2)-[:HAS]->(s)
+                    
                     RETURN s
                     """, Map.of(
                         "shelfId", shelf.getShelfId(),
                         "shelfName", shelf.getShelfName(),
                         "partNumber", shelf.getPartNumber(),
-                        "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : ""
+                        "imageUrl", shelf.getImageUrl() != null ? shelf.getImageUrl() : "",
+                        "shelfPositionId", shelf.getShelfPositionId() != null ? shelf.getShelfPositionId() : ""
                 ));
                 if (result.hasNext()) {
                     Record record = result.next();
@@ -144,7 +164,8 @@ public class ShelfRepository {
                 tx.run("""
                     MATCH (s:Shelf {shelfId: $shelfId, isDeleted: false})
                     OPTIONAL MATCH (sp:ShelfPosition)-[r:HAS]->(s)
-                    SET s.isDeleted = true, s.updatedAt = datetime()
+                    SET s.isDeleted = true, s.updatedAt = datetime(), s.shelfPositionId = "",
+                        sp.shelfId = "", sp.isOccupied = false, sp.updatedAt = datetime()
                     DELETE r
                     """, Map.of(
                     "shelfId", shelfId
@@ -158,7 +179,7 @@ public class ShelfRepository {
         }
     }
 
-    public Map<String, Object> getAllShelves(int page, int size, String search, boolean isDeleted) {
+    public Map<String, Object> getShelfPage(int page, int size, String search, boolean isDeleted) {
         logger.info("Repository: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
                 page, size, search, isDeleted);
         try(Session session = driver.session()){
@@ -166,7 +187,9 @@ public class ShelfRepository {
                 Result countresult = tx.run("""
                     MATCH (s:Shelf)
                     WHERE s.isDeleted = $isDeleted
-                    AND ($search = "" OR toUpper(s.shelfName) CONTAINS toUpper($search) OR toUpper(s.shelfId) CONTAINS toUpper($search))
+                    AND ($search = ""
+                    OR toUpper(s.shelfName) CONTAINS toUpper($search)
+                    OR toUpper(s.shelfId) = toUpper($search))
                     RETURN count(s) AS totalCount
                     """, Map.of(
                     "isDeleted", isDeleted,
@@ -177,7 +200,9 @@ public class ShelfRepository {
                 Result result = tx.run("""
                     MATCH (s:Shelf)
                     WHERE s.isDeleted = $isDeleted
-                    AND ($search = "" OR toUpper(s.shelfName) CONTAINS toUpper($search) OR toUpper(s.shelfId) CONTAINS toUpper($search))
+                    AND ($search = ""
+                    OR toUpper(s.shelfName) CONTAINS toUpper($search)
+                    OR toUpper(s.shelfId) = toUpper($search))
                     RETURN s
                     ORDER BY s.createdAt DESC
                     SKIP $skip
@@ -200,6 +225,24 @@ public class ShelfRepository {
             logger.error("Error fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}: {}",
                     page, size, search, isDeleted, e.getMessage());
             throw new NotFoundException("Error fetching shelves with filters" + e);
+        }
+    }
+
+    public List<Shelf> getShelves() {
+        logger.info("Repository: Fetching shelves}");
+        try(Session session = driver.session()){
+            return session.executeRead(tx -> {
+                Result result = tx.run("""
+                    MATCH (s:Shelf {isDeleted: false, shelfPositionId: ""})
+                    RETURN DISTINCT s
+                    """);
+                List<Shelf> shelves = result.list(record -> Shelf.from(record.get("s").asNode()));
+                logger.info("Fetched {} shelves ", shelves.size());
+                return shelves;
+            });
+        } catch (Exception e) {
+            logger.error("Error fetching shelves for deviceId {}: {}", "deviceId", e.getMessage());
+            throw new RuntimeException("Error fetching shelves for deviceId: " + "deviceId", e);
         }
     }
 }

@@ -1,5 +1,5 @@
 export interface Device {
-    // deviceId: number;
+    deviceId: string;
     deviceName: string;
     partNumber: string;
     buildingName: string;
@@ -7,8 +7,20 @@ export interface Device {
     totalShelfPositions: number;
     imageUrl: string;
     // isDeleted: string;
-    // createdAt: string;
-    // updatedAt: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ShelfPosition {
+    shelfPositionId: string;
+    deviceId: string;
+    shelfId: string;
+    shelfName: string;
+    index: number;
+    isOccupied: boolean;
+    isDeleted: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Page<T> {

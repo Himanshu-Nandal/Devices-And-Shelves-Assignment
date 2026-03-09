@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
         return new ResponseEntity<>(Map.of(
                 "success", false,
-                "message", ex.getMessage()
+                "message", "Global Exception Handler: " + ex.getMessage()
         ), HttpStatus.BAD_REQUEST);
     }
 
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
         return new ResponseEntity<>(Map.of(
                 "success", false,
-                "message", ex.getMessage()
+                "message", "Global Exception Handler: " + ex.getMessage()
         ), HttpStatus.NOT_FOUND);
     }
 
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
         return new ResponseEntity<>(Map.of(
                 "success", false,
-                "message", ex.getMessage()
+                "message", "Global Exception Handler: " + ex.getMessage()
         ), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

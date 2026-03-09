@@ -1,0 +1,131 @@
+.summary-page {
+  padding: 16px;
+}
+
+h1 {
+  margin: 8px 0 16px;
+}
+
+h2 {
+  margin: 0 0 12px;
+}
+
+.summary-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.photo-box,
+.details-box,
+.positions-box {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.photo {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #bbb;
+  border-radius: 6px;
+  color: #777;
+}
+
+.details-box {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  font-size: 14px;
+  color: #444;
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  padding: 8px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #25b92a;
+  color: white;
+}
+
+button.primary {
+  background: #2f6fed;
+  color: white;
+}
+
+button.danger {
+  background: #c73a2f;
+  color: white;
+}
+
+.link-button {
+  background: transparent;
+  border: 0;
+  color: #2f6fed;
+  padding: 0;
+  cursor: pointer;
+}
+
+.message {
+  margin: 8px 0;
+}
+
+.message.error {
+  color: #c73a2f;
+}
+
+.message.success {
+  color: #1f7a39;
+}
+
+.empty-state {
+  color: #666;
+}
+
+@media (max-width: 960px) {
+  .summary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* .positions-row {
+    grid-template-columns: 1fr;
+  } */
+}

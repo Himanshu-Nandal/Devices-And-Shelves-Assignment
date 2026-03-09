@@ -134,7 +134,7 @@ public class ShelfService {
         );
     }
 
-    public Map<String, Object> getAllShelves(int page, int size, String search, boolean isDeleted) {
+    public Map<String, Object> getShelfPage(int page, int size, String search, boolean isDeleted) {
         logger.info("Service: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
                 page, size, search, isDeleted);
 
@@ -147,7 +147,7 @@ public class ShelfService {
         }
 
         // Fetch shelves from repository
-        Map<String, Object> response = shelfRepository.getAllShelves(page, size, search, isDeleted);
+        Map<String, Object> response = shelfRepository.getShelfPage(page, size, search, isDeleted);
         return Map.of(
                 "success", true,
                 "message", "Shelves fetched successfully",
@@ -156,5 +156,12 @@ public class ShelfService {
                 "pageNumber", page,
                 "pageSize", size
         );
+    }
+
+    public List<Shelf> getShelves() {
+        logger.info("Service: Fetching shelves ");
+
+        // Fetch shelves from repository
+        return shelfRepository.getShelves();
     }
 }

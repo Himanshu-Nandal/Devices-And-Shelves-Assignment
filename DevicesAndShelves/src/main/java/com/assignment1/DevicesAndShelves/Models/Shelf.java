@@ -13,6 +13,7 @@ public class Shelf {
     private String shelfName;
     private String partNumber;
     private String imageUrl;
+    private String shelfPositionId;
     private Boolean isDeleted;
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
@@ -24,6 +25,7 @@ public class Shelf {
                 .shelfName(n.get("shelfName").asString(null))
                 .partNumber(n.get("partNumber").asString(null))
                 .imageUrl(n.get("imageUrl").asString(null))
+                .shelfPositionId(n.get("isAssigned").asString(null))
                 .isDeleted(n.get("isDeleted").asBoolean(false))
                 .createdAt(n.get("createdAt").isNull() ? null : n.get("createdAt").asZonedDateTime())
                 .updatedAt(n.get("updatedAt").isNull() ? null : n.get("updatedAt").asZonedDateTime())

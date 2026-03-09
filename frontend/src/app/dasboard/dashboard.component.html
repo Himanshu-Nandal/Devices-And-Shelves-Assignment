@@ -8,21 +8,22 @@
                 <input class="search-field" 
                     [(ngModel)]="deviceSearch" 
                     (keyup.enter)="onDeviceSearch()" 
-                    placeholder="Search by id"
+                    placeholder="Search by name/id"
                 />
                 <button class="addButton" (click)="onAddDevice()">Add Device</button>
             </div>
         </div>
 
         <div class="card-grid">
-            @for (device of devices(); track device.deviceId) {
-                <div class="item-card">
-                    <div class="card-img">
-                        <img src="{{device.imageUrl}}" alt="{{device.deviceName}}">
+            @for (device of devices(); track device.deviceName) {
+                <div class="item-card" (click)="onDeviceClick(device.deviceId)">
+                    <div class="card-img" (click)="onDeviceClick(device.deviceId)">
+                        <img [src]="device.imageUrl" [alt]="device.deviceName">
                     </div>
+
                     <div class="card-content">
                         <h3>{{device.deviceName}}</h3>
-                        <span>{{device.deviceType}}</span>
+                        <span>Type: {{device.deviceType}}</span>
                     </div>
                 </div> 
             } @empty {
@@ -46,7 +47,7 @@
                 <input class="search-field" 
                     [(ngModel)]="shelfSearch" 
                     (keyup.enter)="onShelfSearch()" 
-                    placeholder="Search by id"
+                    placeholder="Search by name/id"
                 />
 
                 <button class="addButton" (click)="onAddShelf()">Add Shelf</button>
@@ -54,13 +55,14 @@
         </div>
 
         <div class="card-grid">
-            @for (shelf of shelves(); track shelf.shelfId) {
-                <div class="item-card">
+            @for (shelf of shelves(); track shelf.shelfName) {
+                <div class="item-card" (click)="onShelfClick(shelf.shelfId)">
                     <div class="card-img">
-                        <img src="{{shelf.imageUrl}}" alt="{{shelf.shelfName}}">
+                        <img [src]="shelf.imageUrl" [alt]="shelf.shelfName">
                     </div>
                     <div class="card-content">
                         <h3>{{shelf.shelfName}}</h3>
+                        <span>Part Number: {{shelf.partNumber}}</span>
                     </div>
                 </div> 
             } @empty {

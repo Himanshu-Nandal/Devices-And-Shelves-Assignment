@@ -88,6 +88,7 @@ public class DeviceRepository {
                     Record record = result.next();
                     Node deviceNode = record.get("d").asNode();
                     logger.info("Device fetched successfully with deviceId: {}", deviceId);
+
                     return Device.from(deviceNode);
                 } else {
                     logger.warn("Device not found with ID: {}", deviceId);
@@ -146,9 +147,10 @@ public class DeviceRepository {
                         SET d.isDeleted = true, d.updatedAt = datetime()
                         WITH d
                         OPTIONAL MATCH (d)-[:HAS]->(sp:ShelfPosition {isDeleted: false})
-                        SET sp.isDeleted = true, sp.updatedAt = datetime()
+                        SET sp.isDeleted = true, sp.isOccupied = false, sp.shelfId = "", sp.updatedAt = datetime()
                         WITH d
                         OPTIONAL MATCH (d)-[:HAS]->(:ShelfPosition)-[r:HAS]->(s:Shelf {isDeleted: false})
+                        SET s.shelfPositionId = "", s.updatedAt = datetime()
                         DELETE r
                         RETURN d
                         """, Map.of(
@@ -195,15 +197,15 @@ public class DeviceRepository {
         }
     }
 
-    public Map<String, Object> getAllDevices(int page, int size, String search, boolean isDeleted) {
+    public Map<String, Object> getDevicePage(int page, int size, String search, boolean isDeleted) {
         logger.info("Repository: Fetching all devices with filters - page: {}, size: {}, search: {}, isDeleted: {}", page, size, search, isDeleted);
         try (Session session = driver.session()) {
             return session.executeRead(tx -> {
                 Result countResult = tx.run("""
                 MATCH (d:Device)
                 WHERE d.isDeleted = $isDeleted
-                AND ($search = "" 
-                    OR toUpper(d.deviceId) CONTAINS toUpper($search) 
+                AND ($search = ""
+                    OR toUpper(d.deviceId) = toUpper($search) 
                     OR toUpper(d.deviceName) CONTAINS toUpper($search))
                 RETURN count(d) AS totalCount
                 """, Map.of(
@@ -215,8 +217,8 @@ public class DeviceRepository {
                 Result result = tx.run("""
                 MATCH (d:Device)
                 WHERE d.isDeleted = $isDeleted
-                AND ($search = "" 
-                    OR toUpper(d.deviceId) CONTAINS toUpper($search) 
+                AND ($search = ""
+                    OR toUpper(d.deviceId) = toUpper($search) 
                     OR toUpper(d.deviceName) CONTAINS toUpper($search))
                 OPTIONAL MATCH (d)-[:HAS]->(sp:ShelfPosition {isDeleted: false})
                 WITH d, collect(sp) AS shelfPositions
@@ -252,6 +254,25 @@ public class DeviceRepository {
                     page, size, search, isDeleted, e.getMessage());
 
             throw new NotFoundException("Error fetching devices with filters" + e.getMessage());
+        }
+    }
+
+    public List<Device> getAllDevices() {
+        logger.info("Repository: Fetching all devices");
+        try (Session session = driver.session()) {
+            return session.executeRead(tx -> {
+                Result result = tx.run("""
+                MATCH (d:Device {isDeleted: false})
+                RETURN d
+                ORDER BY d.createdAt DESC
+                """);
+                List<Device> devices = result.list(record -> Device.from(record.get("d").asNode()));
+                logger.info("All devices fetched successfully. Total devices: {}", devices.size());
+                return devices;
+            });
+        } catch (Exception e) {
+            logger.error("Error fetching all devices: {}", e.getMessage());
+            throw new NotFoundException("Error fetching all devices" + e.getMessage());
         }
     }
 }

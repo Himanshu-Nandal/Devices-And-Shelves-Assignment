@@ -1,11 +1,12 @@
 export interface Shelf {
-    // shelfId: number;
+    shelfId: string;
     shelfName: string;
     partNumber: string;
     imageUrl: string;
+    shelfPositionId: string;
 //     isDeleted: string;
-//     createdAt: string;
-//     updatedAt: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 // export interface Page<T> {

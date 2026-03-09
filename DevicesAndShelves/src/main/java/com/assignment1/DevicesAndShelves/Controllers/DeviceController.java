@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200/")
 @RestController
 @RequestMapping("/api/devices")
 public class DeviceController {
@@ -41,9 +42,17 @@ public class DeviceController {
     }
 
 
+    @GetMapping("/all")
+    public ResponseEntity<Map<String, Object>>getAllDevices(){
+        logger.info("Controller: Fetching all devices");
+        Map<String, Object> response = deviceService.getAllDevices();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
     // for pagination of devices on landing page of the client
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllDevices(
+    public ResponseEntity<Map<String, Object>> getDevicePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String search,
@@ -51,7 +60,7 @@ public class DeviceController {
     ) {
         logger.info("Controller: Fetching devices with filters - page: {}, size: {}, deviceId: {}, isDeleted: {}",
                 page, size, search, isDeleted);
-        Map<String, Object> response = deviceService.getAllDevices(page, size, search, isDeleted);
+        Map<String, Object> response = deviceService.getDevicePage(page, size, search, isDeleted);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

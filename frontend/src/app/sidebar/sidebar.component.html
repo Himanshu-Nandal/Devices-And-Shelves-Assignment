@@ -6,10 +6,12 @@
 
     @if (devicesOpen()) {
       <div class="dropdown-list">
-          @for (device of devices(); track device.name) {
+          @for (device of devices; track device.deviceId) {
             <a >
-              <span class="dropdown-item">{{ device.name }}</span>
+              <span class="dropdown-item">{{ device.deviceName }}</span>
             </a>
+          } @empty {
+            <span class="dropdown-item">No Items</span>
           }
       </div>
     }
@@ -22,10 +24,12 @@
 
     @if (shelvesOpen()) {
       <div class="dropdown-list">
-          @for (shelf of shelves(); track shelf.name) {
+          @for (shelf of shelves; track shelf.shelfId) {
             <a >
-              <span class="dropdown-item">{{ shelf.name }}</span>
+              <span class="dropdown-item">{{ shelf.shelfName }}</span>
             </a>
+          } @empty {
+            <span class="dropdown-item">No Items</span>
           }
       </div>
     }

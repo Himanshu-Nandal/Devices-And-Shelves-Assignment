@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:4200/")
 @RestController
 @RequestMapping("/api/shelves")
 public class ShelfController {
@@ -56,7 +57,7 @@ public class ShelfController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllShelves(
+    public ResponseEntity<Map<String, Object>> getShelfPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String search,
@@ -64,7 +65,14 @@ public class ShelfController {
     ) {
         logger.info("Controller: Fetching shelves with filters - page: {}, size: {}, search: {}, isDeleted: {}",
                 page, size, search, isDeleted);
-        return new ResponseEntity<>(shelfService.getAllShelves(page, size, search, isDeleted), HttpStatus.OK);
+        return new ResponseEntity<>(shelfService.getShelfPage(page, size, search, isDeleted), HttpStatus.OK);
+    }
+    
+    @GetMapping("/all")
+    public ResponseEntity<List<Shelf>> getShelves() {
+        logger.info("Controller: Fetching shelves for ");
+        List<Shelf> shelves = shelfService.getShelves();
+        return new ResponseEntity<>(shelves, HttpStatus.OK);
     }
 
 }

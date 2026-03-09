@@ -1,0 +1,39 @@
+<div class="summary-page">
+    <button class="link-button" (click)="goBack()">← Back to dashboard</button>
+    <!-- Shelf Section -->
+    <h1>Shelf Summary</h1>
+    <section>
+        <div class="photo-box">
+
+        </div>
+        <div class="details-box">
+            <h2>Shelf Properties</h2>
+
+            <label>Name</label>
+            <input [(ngModel)]="shelf.shelfName" [readonly]="!change"/>
+
+            <label>Part Number</label>
+            <input [(ngModel)]="shelf.partNumber" [readonly]="!change"/>
+            
+            <label>Photo URL</label>
+            <input [(ngModel)]="shelf.imageUrl" [readonly]="!change"/>
+
+            <label>Shelf Position ID</label>
+            <input [(ngModel)]="shelf.shelfPositionId" [readonly]="!change"/>
+
+            <label>Created At</label>
+            <input [(ngModel)]="shelf.createdAt" readonly="true"/>
+
+            <label>Updated At</label>
+            <input [(ngModel)]="shelf.updatedAt" readonly="true"/>
+
+            <div class="button-row">
+                <button class="secondary" (click)="toggleChange()">{{change ? 'Cancel' : 'Change'}}</button>
+                <button class="primary" (click)="onShelfUpdate()">Update</button>
+                <button class="danger" (click)="onShelfDelete()">Delete</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shelf Position Section -->
+</div>
