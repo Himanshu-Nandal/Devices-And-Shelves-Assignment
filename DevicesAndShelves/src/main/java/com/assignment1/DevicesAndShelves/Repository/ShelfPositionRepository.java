@@ -62,11 +62,14 @@ public class ShelfPositionRepository {
                 tx.run("""
                     MATCH (d:Device {deviceId: $deviceId, isDeleted: false})-[:HAS]->(sp:ShelfPosition)
                     WHERE sp.index > $initial - $change AND sp.index <= $initial AND sp.isDeleted = false
-                    SET sp.isDeleted = true, sp.isOccupied = false, sp.shelfId = "", sp.shelfName = "", sp.updatedAt = datetime()
+                    SET sp.isDeleted = true,
+                        sp.isOccupied = false,
+                        sp.shelfId = "",
+                        sp.shelfName = "",
+                        sp.updatedAt = datetime()
                     
                     WITH sp
                     OPTIONAL MATCH (sp)-[r:HAS]->(s:Shelf)
-                    WITH r, s WHERE s IS NOT NULL
                     SET s.shelfPositionId = "", s.updatedAt = datetime()
                     DELETE r
                     """, Map.of(
@@ -136,8 +139,9 @@ public class ShelfPositionRepository {
                 tx.run("""
                     MATCH (sp:ShelfPosition {shelfPositionId: $shelfPositionId, isDeleted: false})
                     SET sp.isDeleted = true, sp.isOccupied = false, sp.updatedAt = datetime(), sp.shelfId = ""
+                    WITH sp
                     OPTIONAL MATCH (sp)-[r:HAS]->(s:Shelf)
-                    WITH r, s WHERE s IS NOT NULL
+                    WITH r, s
                     SET s.shelfPositionId = "", s.updatedAt = datetime()
                     DELETE r
                     """, Map.of("shelfPositionId", shelfPositionId));

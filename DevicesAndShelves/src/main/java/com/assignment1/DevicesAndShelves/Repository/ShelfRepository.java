@@ -117,9 +117,9 @@ public class ShelfRepository {
             return session.executeWrite(tx -> {
                 Result result = tx.run("""
                     MATCH (s:Shelf {shelfId: $shelfId, isDeleted: false})
-                    OPTIONAL MATCH (sp:ShelfPosition {shelfPositionId: $shelfPositionId})-[r:HAS]->(s)
-                    SET sp.shelfId = "", sp.updatedAt = datetime()
-                    DELETE r
+//                    OPTIONAL MATCH (sp:ShelfPosition )-[r:HAS]->(s)
+//                    SET sp.shelfId = "", sp.shelfName = "", sp.isOccupied = false, sp.updatedAt = datetime()
+//                    DELETE r
                     
                     WITH s
                     SET s.shelfName = $shelfName,
@@ -128,10 +128,10 @@ public class ShelfRepository {
                         s.shelfPositionId = $shelfPositionId,
                         s.updatedAt = datetime()
                     
-                    WITH s
-                    OPTIONAL MATCH (sp2:ShelfPosition {shelfPositionId: $shelfPositionId})
-                    SET sp2.shelfId = s.shelfId, sp.updatedAt = datetime()
-                    MERGE (sp2)-[:HAS]->(s)
+//                    WITH s
+//                    OPTIONAL MATCH (sp2:ShelfPosition {shelfPositionId: $shelfPositionId})
+//                    SET sp2.shelfId = s.shelfId, sp2.shelfName = $shelfName, sp2.isOccupied = true, sp2.updatedAt = datetime()
+//                    MERGE (sp2)-[:HAS]->(s)
                     
                     RETURN s
                     """, Map.of(
