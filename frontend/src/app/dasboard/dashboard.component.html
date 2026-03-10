@@ -3,31 +3,28 @@
     <section class="section">
         <div class="section-header">
             <h2 class="section-title">Your Devices</h2>
-            
+
             <div class="section-actions">
-                <input class="search-field" 
-                    [(ngModel)]="deviceSearch" 
-                    (keyup.enter)="onDeviceSearch()" 
-                    placeholder="Search by name/id"
-                />
+                <input class="search-field" [(ngModel)]="deviceSearch" (keyup.enter)="onDeviceSearch()"
+                    placeholder="Search by name/id" />
                 <button class="addButton" (click)="onAddDevice()">Add Device</button>
             </div>
         </div>
 
         <div class="card-grid">
             @for (device of devices(); track device.deviceName) {
-                <div class="item-card" (click)="onDeviceClick(device.deviceId)">
-                    <div class="card-img" (click)="onDeviceClick(device.deviceId)">
-                        <img [src]="device.imageUrl" [alt]="device.deviceName">
-                    </div>
+            <div class="item-card" (click)="onDeviceClick(device.deviceId)">
+                <div class="card-img" (click)="onDeviceClick(device.deviceId)">
+                    <img [src]="device.imageUrl" [alt]="device.deviceName">
+                </div>
 
-                    <div class="card-content">
-                        <h3>{{device.deviceName}}</h3>
-                        <span>Type: {{device.deviceType}}</span>
-                    </div>
-                </div> 
+                <div class="card-content">
+                    <h3>{{device.deviceName}}</h3>
+                    <span>Type: {{device.deviceType}}</span>
+                </div>
+            </div>
             } @empty {
-                <p class="empty-message">No devices found.</p>
+            <p class="empty-message">No devices found.</p>
             }
         </div>
 
@@ -44,11 +41,8 @@
             <h2 class="section-title">Your Shelves</h2>
 
             <div class="section-actions">
-                <input class="search-field" 
-                    [(ngModel)]="shelfSearch" 
-                    (keyup.enter)="onShelfSearch()" 
-                    placeholder="Search by name/id"
-                />
+                <input class="search-field" [(ngModel)]="shelfSearch" (keyup.enter)="onShelfSearch()"
+                    placeholder="Search by name/id" />
 
                 <button class="addButton" (click)="onAddShelf()">Add Shelf</button>
             </div>
@@ -56,17 +50,17 @@
 
         <div class="card-grid">
             @for (shelf of shelves(); track shelf.shelfName) {
-                <div class="item-card" (click)="onShelfClick(shelf.shelfId)">
-                    <div class="card-img">
-                        <img [src]="shelf.imageUrl" [alt]="shelf.shelfName">
-                    </div>
-                    <div class="card-content">
-                        <h3>{{shelf.shelfName}}</h3>
-                        <span>Part Number: {{shelf.partNumber}}</span>
-                    </div>
-                </div> 
+            <div class="item-card" (click)="onShelfClick(shelf.shelfId)">
+                <div class="card-img">
+                    <img [src]="shelf.imageUrl" [alt]="shelf.shelfName">
+                </div>
+                <div class="card-content">
+                    <h3>{{shelf.shelfName}}</h3>
+                    <span>Part Number: {{shelf.partNumber}}</span>
+                </div>
+            </div>
             } @empty {
-                <p class="empty-message">No shelves found.</p>
+            <p class="empty-message">No shelves found.</p>
             }
         </div>
 

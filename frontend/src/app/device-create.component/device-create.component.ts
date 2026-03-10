@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Shelf } from '../models/shelf.model';
 import { DeviceService } from '../services/device.service';
@@ -12,24 +12,24 @@ import { ShelfService } from '../services/shelf.service';
   styleUrls: ['./device-create.component.css'],
 } as any)
 export class DeviceCreateComponent implements OnInit {
-  form!: FormGroup;
+  form: FormGroup = new FormGroup({});
   positionCount = signal(0);
-
+  
   constructor(
-    private fb: FormBuilder,
+    // private fb: FormBuilder,
     private deviceService: DeviceService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.form = this.fb.group({
-      deviceId: [''],
-      deviceName: ['', Validators.required],
-      partNumber: ['', Validators.required],
-      buildingName: ['', Validators.required],
-      deviceType: ['', Validators.required],
-      totalShelfPositions: [0, [Validators.required, Validators.min(1), Validators.max(50)]],
-      imageUrl: [''],
+    this.form = new FormGroup({
+      deviceId: new FormControl(''),
+      deviceName: new FormControl('', Validators.required),
+      partNumber: new FormControl('', Validators.required),
+      buildingName: new FormControl('', Validators.required),
+      deviceType: new FormControl('', Validators.required),
+      totalShelfPositions: new FormControl(0, [Validators.required, Validators.min(1), Validators.max(50)]),
+      imageUrl: new FormControl(''),
       
     });
 

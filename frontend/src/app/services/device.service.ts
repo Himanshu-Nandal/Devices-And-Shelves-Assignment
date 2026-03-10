@@ -10,12 +10,12 @@ import { Shelf } from '../models/shelf.model';
 export class DeviceService implements OnInit {
     private readonly baseUrl = 'http://localhost:8080/api/devices';
 
-    devices: Observable<Device[]> | null = null;
+    // devices: Observable<Device[]> | null = null;
     
     constructor(private http: HttpClient) { }
 
     public ngOnInit(): void {
-        this.devices = this.getDevices();
+        // this.devices = this.getDevices();
     }
     
     public getDevicePage(page: number, size: number, search: string = ''): Observable<Page<Device>> {

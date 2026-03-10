@@ -29,6 +29,7 @@ export class DeviceSummaryComponent implements OnInit {
   
   public ngOnInit(): void {
     this.deviceId = this.route.snapshot.paramMap.get('id') || '';
+    console.log('Device ID from route:', this.deviceId);
     this.loadDeviceSummary();
   }
       
@@ -51,6 +52,7 @@ export class DeviceSummaryComponent implements OnInit {
   public change: boolean = false;
   
   public onDeviceUpdate(): void {
+    console.log('updated device data:', this.device);
     this.deviceService.updateDevice(this.deviceId, this.device).subscribe({
       next: () => {
         this.change = false;

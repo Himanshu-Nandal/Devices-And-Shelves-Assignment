@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   devicePageSize = signal(6);
   deviceTotalElements = signal(0);
   deviceTotalPages = computed(() => Math.ceil(this.deviceTotalElements() / this.devicePageSize()));
-  
+
   shelves = signal<Shelf[]>([]);
   shelfSearch = '';
   shelfPage = signal(1);
@@ -31,56 +31,50 @@ export class DashboardComponent implements OnInit {
     private deviceService: DeviceService,
     private shelfService: ShelfService,
     private router: Router,
-  ) {}
+  ) { }
 
   public ngOnInit(): void {
     this.loadDevices();
     this.loadShelves();
   }
-  
-  
+
+
   // Device methods
   public loadDevices() {
     this.deviceService.getDevicePage(this.devicePage(), this.devicePageSize(), this.deviceSearch)
-    .subscribe({
-      next: (page: Page<Device>) => {
-        this.devices.set(page.content);
-        this.deviceTotalElements.set(page.totalElements);
-      },
-      error: (err) => {
-        console.error('Error loading devices:', err);
-      },
-      complete: () => console.log("Finished loading devices")
-    });
+      .subscribe({
+        next: (page: Page<Device>) => {
+          this.devices.set(page.content);
+          this.deviceTotalElements.set(page.totalElements);
+        },
+        error: (err) => {
+          console.error('Error loading devices:', err);
+        },
+        complete: () => console.log("Finished loading devices")
+      });
   }
-  
+
   public onDeviceSearch(): void {
     this.devicePage.set(1);
     this.loadDevices();
   }
-  
-  // public onDevicePageChange(event: PageEvent): void {
-    //   this.devicePage.set(event.pageIndex);
-    //   this.devicePageSize.set(event.pageSize);
-    //   this.loadDevices();
-    // }
-    
-    public onAddDevice(): void {
-      this.router.navigate(['/devices/create']);
-    }
-    
-    public onDeviceClick(arg0: String): void {
-      console.log('Clicked device with ID:', arg0);
-      this.router.navigate(['/devices', arg0]);
-    }
 
-    public nextDevicePage() {
-      this.devicePage.set(this.devicePage() + 1);
-      this.loadDevices();
-    }
-    
-    public prevDevicePage() {
-      if (this.devicePage() > 1) {
+  public onAddDevice(): void {
+    this.router.navigate(['/devices/create']);
+  }
+
+  public onDeviceClick(arg0: String): void {
+    console.log('Clicked device with ID:', arg0);
+    this.router.navigate(['/devices', arg0]);
+  }
+
+  public nextDevicePage() {
+    this.devicePage.set(this.devicePage() + 1);
+    this.loadDevices();
+  }
+
+  public prevDevicePage() {
+    if (this.devicePage() > 1) {
       this.devicePage.set(this.devicePage() - 1);
       this.loadDevices();
     }
@@ -90,16 +84,16 @@ export class DashboardComponent implements OnInit {
   // Shelf methods
   public loadShelves() {
     this.shelfService.getShelfPage(this.shelfPage(), this.shelfPageSize(), this.shelfSearch)
-    .subscribe({
-      next: (page: Page<Shelf>) => {
-        this.shelves.set(page.content);
-        this.shelfTotalElements.set(page.totalElements);
-      },
-      error: (err) => {
-        console.error('Error loading shelves:', err);
-      },
-      complete: () => console.log("Finished loading shelves")
-    });
+      .subscribe({
+        next: (page: Page<Shelf>) => {
+          this.shelves.set(page.content);
+          this.shelfTotalElements.set(page.totalElements);
+        },
+        error: (err) => {
+          console.error('Error loading shelves:', err);
+        },
+        complete: () => console.log("Finished loading shelves")
+      });
   }
 
   public onShelfSearch(): void {

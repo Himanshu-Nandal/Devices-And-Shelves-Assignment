@@ -57,37 +57,6 @@
   transition: background-color 0.15s ease;
 }
 
-/* Custom scrollbar for the dropdown lists */
-.dropdown-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.dropdown-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb {
-  background-color: #bbb;
-  border-radius: 3px;
-}
-
-.dropdown-list::-webkit-scrollbar-thumb:hover {
-  background-color: #999;
-}
-
-/* Custom scrollbar for the sidebar itself */
-.sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 3px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: #aaa;
+.dropdown-item:hover {
+  background-color: #f0f0f0;
 }
