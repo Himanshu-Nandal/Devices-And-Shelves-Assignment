@@ -12,7 +12,8 @@
         </div>
 
         <div class="card-grid">
-            @for (device of devices(); track device.deviceName) {
+            
+            @for (device of devices(); track device.deviceId) {
             <div class="item-card" (click)="onDeviceClick(device.deviceId)">
                 <div class="card-img" (click)="onDeviceClick(device.deviceId)">
                     <img [src]="device.imageUrl" [alt]="device.deviceName">
@@ -20,7 +21,7 @@
 
                 <div class="card-content">
                     <h3>{{device.deviceName}}</h3>
-                    <span>Type: {{device.deviceType}}</span>
+                    <span>Type: {{device.partNumber}}</span>
                 </div>
             </div>
             } @empty {

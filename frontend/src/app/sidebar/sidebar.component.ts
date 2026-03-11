@@ -29,9 +29,13 @@ export class SidebarComponent implements OnInit {
 
   
   public loadDevices(): void{
+    console.log('Loading devices...');
     this.deviceService.getDevices().subscribe({
       next: (record) => {
-        this.devices = record;
+        console.log(record);
+        
+        console.log('Received devices data:');
+        this.devices = record["devices"] || [];
         if (!this.devices) {
           console.error('Devices data is missing in the response');
           return;

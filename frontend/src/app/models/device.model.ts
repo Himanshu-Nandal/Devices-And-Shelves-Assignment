@@ -6,7 +6,7 @@ export interface Device {
     deviceType: string;
     totalShelfPositions: number;
     imageUrl: string;
-    // isDeleted: string;
+    isDeleted: boolean;
     createdAt: string;
     updatedAt: string;
 }

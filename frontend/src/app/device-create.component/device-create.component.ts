@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Shelf } from '../models/shelf.model';
 import { DeviceService } from '../services/device.service';
@@ -49,6 +49,7 @@ export class DeviceCreateComponent implements OnInit {
       deviceType: this.form.value.deviceType,
       totalShelfPositions: this.form.value.totalShelfPositions,
       imageUrl: this.form.value.imageUrl,
+      isDeleted: false, // Default value for new devices
       createdAt: '', // Backend will set this
       updatedAt: ''  // Backend will set this
     };

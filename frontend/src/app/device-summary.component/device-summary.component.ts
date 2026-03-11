@@ -1,4 +1,4 @@
-import { Component, OnInit, Signal, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Signal, signal } from '@angular/core';
 import { DeviceService } from '../services/device.service';
 import { Device, ShelfPosition } from '../models/device.model';
 import { FormsModule } from '@angular/forms';
@@ -19,12 +19,14 @@ export class DeviceSummaryComponent implements OnInit {
   availableShelves: Shelf[] = [];
   deviceSummary: Observable<any> | null = null;
   deviceId: string = "";
+  selectedShelf:Shelf = {} as Shelf;
   
   constructor(
     private deviceService: DeviceService,
     private shelfService: ShelfService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr:ChangeDetectorRef
   ) {}
   
   public ngOnInit(): void {
@@ -32,18 +34,20 @@ export class DeviceSummaryComponent implements OnInit {
     console.log('Device ID from route:', this.deviceId);
     this.loadDeviceSummary();
   }
-      
-    // DEVICE METHODS
+  
+  // DEVICE METHODS
   public loadDeviceSummary(): void {
     this.deviceSummary = this.deviceService.getDeviceSummary(this.deviceId);
     this.deviceSummary?.subscribe({
       next: (record) => {
         this.device = record.device;
         this.shelfPositions = record.shelfPositions;
+        console.log('shelf positions: ', this.shelfPositions);
         this.loadShelves();
+        this.cdr.detectChanges();
       },
       error: (err) => {
-      console.error('Failed to load device summary', err);
+        console.error('Failed to load device summary', err);
       },
       complete: () => console.log('Finished loading device summary')
     });
@@ -66,7 +70,7 @@ export class DeviceSummaryComponent implements OnInit {
   }
   
   public onDeviceDelete(): void {
-  if (confirm('Are you sure you want to delete this device?')) {
+    if (confirm('Are you sure you want to delete this device?')) {
       this.deviceService.deleteDevice(this.deviceId).subscribe({
         next: () => {this.router.navigate(['/']);},
         error: (err) => console.error('Failed to delete device', err),
@@ -78,13 +82,14 @@ export class DeviceSummaryComponent implements OnInit {
   public toggleChange() {
     this.change = !this.change;
   }
-
-
+  
+  
   // SHELF POSITION METHODS        
   public loadShelves(): void {
     this.shelfService.getShelves().subscribe({
       next: (shelves) => {
         this.availableShelves = shelves;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Failed to load shelves', err);
@@ -99,6 +104,9 @@ export class DeviceSummaryComponent implements OnInit {
     this.editShelf.set(!this.editShelf());
   }
   
+  setSelectedShelf(shelf: Shelf): void {
+    this.selectedShelf = shelf;
+  }
   
   public onShelfPositionUpdate(position: ShelfPosition, shelfId: string): void {
 
@@ -106,7 +114,7 @@ export class DeviceSummaryComponent implements OnInit {
       shelfPositionId: position.shelfPositionId,
       deviceId: position.deviceId,
       shelfId: shelfId,
-      shelfName: position.shelfName,
+      shelfName: this.selectedShelf.shelfName,
       index: position.index,
       isOccupied: position.isOccupied,
       isDeleted: position.isDeleted,

@@ -28,8 +28,8 @@ export class DeviceService implements OnInit {
         return this.http.get<Page<Device>>(this.baseUrl, { params });
     }
     
-    public getDevices(): Observable<Device[]> {
-        return this.http.get<Device[]>(`${this.baseUrl}/all`);
+    public getDevices(): Observable<any> {
+        return this.http.get<any>(`${this.baseUrl}/all`);
     }
 
     public getDevice(id: string): Observable<Device> {

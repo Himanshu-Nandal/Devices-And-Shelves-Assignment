@@ -52,14 +52,17 @@
                     <span>{{position.index}}</span>
                     <select [(ngModel)]="position.shelfId">
 
-                        <option [value]="position.shelfId"  selected>{{position.shelfId? position.shelfName : 'No shelf assigned'}}</option>
-                        
+                        <option [value]="position.shelfId"  >{{position.shelfId? position.shelfName : 'No shelf assigned'}}</option>
+                        <!-- selected -->
+                         
                         @if (position.shelfId) {
                             <option value="" >Remove Shelf</option>
                         }
                         
                         @for (shelf of availableShelves; track shelf.shelfId) {
-                            <option [value]="shelf.shelfId" >{{shelf.shelfName}}</option>
+                            <div (click)="position.shelfName = shelf.shelfName">
+                                <option [value]="shelf.shelfId">{{shelf.shelfName}}</option>
+                            </div>
                         }@empty {
                             <p class="empty-state">No shelves to assign.</p>
                         }
